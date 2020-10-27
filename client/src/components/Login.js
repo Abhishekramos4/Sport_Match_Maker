@@ -25,7 +25,7 @@ return (
 <div >
 
 <NavbarMain isLogin={true} />
-{/* <img src={bgImage}/> */}
+<img src={bgImage}/>
 
 <Paper style={{margin:"5px",padding:"1% 2%", width:"40%"}}>
     <form >
