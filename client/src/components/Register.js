@@ -59,8 +59,7 @@ function Register()
        function success(position)
        {
            
-        // console.log(position.coords.latitude);
-        // console.log(position.coords.longitude);
+       
             document.getElementById("latitude").value=(position.coords.latitude).toString();
             document.getElementById("longitude").value=(position.coords.longitude).toString();
             
@@ -88,7 +87,7 @@ function Register()
     function handleSubmit()
     {
         console.log(registerForm);
-        axios.post("http://localhost:5000/dummy-register",registerForm)
+        axios.post("http://localhost:5000/register",registerForm)
         .then(function(res){
             console.log(res);
         })
@@ -109,6 +108,7 @@ function Register()
 <Grid item lg={12}>
 <TextField label="User ID"
     name="userId"
+    value={registerForm.userId}
     onChange={handleChange}
     fullWidth
     required
@@ -118,6 +118,7 @@ function Register()
 <Grid item>
     <TextField label="First Name"
         name="fname"
+        value={registerForm.fname}
         onChange={handleChange}
         fullWidth
         required
@@ -128,6 +129,7 @@ function Register()
 <Grid item>
     <TextField label="Last Name"
         name="lname"
+        value={registerForm.lname}
         onChange={handleChange}
         fullWidth
         required
@@ -139,6 +141,7 @@ function Register()
     <TextField label="Email"
         name="email"
         type="email"
+        value={registerForm.email}
         onChange={handleChange}
         fullWidth
         required
@@ -150,6 +153,7 @@ function Register()
     <TextField  id="latitude" 
         name="latitude"
         type="latitude"
+        value={registerForm.latitude}
         onChange={handleChange}
         fullWidth
       
@@ -161,6 +165,7 @@ function Register()
     <TextField id="longitude" 
         name="longitude"
         type="longitude"
+        value={registerForm.longitude}
         onChange={handleChange}
         fullWidth
         
@@ -174,6 +179,8 @@ function Register()
 <Grid item lg={12}>
     <TextField label="Password" 
     name="password"
+    value={registerForm.password}
+    onChange={handleChange}
     type="password"
     fullWidth
     required

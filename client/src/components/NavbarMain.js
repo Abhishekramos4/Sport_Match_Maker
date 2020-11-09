@@ -70,6 +70,7 @@ brandLogo:{
 appItemsLg:{
 
 position:"absolute",
+marginTop:"1.2%",
 right:"15px",
   [theme.breakpoints.down('sm')]:
   {
@@ -114,33 +115,15 @@ const [anchorEl, setAnchorEl] = useState(null);
   return (
     <AppBar position="static" style={{ backgroundColor: '#242424', padding: "2px 0" }}>
       <Toolbar >
-        
-         <Typography  className={classes.brandName} >  <SportsSoccerIcon className={classes.brandLogo} />&nbsp;Sport Match Maker</Typography>
-         
-          {/* <Grid item xs={12} lg={2}>
-          {  (!val)?
+        <Grid container>
+        <Grid item>
+        <Typography  className={classes.brandName} >  <SportsSoccerIcon className={classes.brandLogo} />&nbsp;Sport Match Maker</Typography>
+        </Grid>
+     
+         <Grid item>
+         {  (!val)?
             <div>
-            <Grid container> 
-            <Grid item xs={12} lg={6}>
-            <Link to="/login">
-            <Button variant="text" color="secondary" >Login</Button>
-            </Link>
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <Link to="/register">
-            <Button variant="text" style={{backgroundColor:'green'}}>Register</Button>
-            </Link>
-           </Grid>
-            </Grid>
-            
-            </div>
-             :
-          <div></div>
-         
-         }
-         </Grid> */}
-        
-         <div className={classes.appItemsLg} >
+            <div className={classes.appItemsLg} >
             <Link to="/login" style={{textDecoration:'none'}}>
             <Button style={{color:"white"}}>Login</Button>
             </Link>
@@ -164,9 +147,21 @@ const [anchorEl, setAnchorEl] = useState(null);
           <MenuItem onClick={handleClose}><Link to="/register" style={{textDecoration:'none',color:"black"}}>Register</Link></MenuItem>
           
         </Menu>
-        </div>   
+        </div> 
+        </div>  
         
-    </Toolbar>
+            
+            
+             :
+          <div></div>
+         
+         }
+         </Grid>
+          
+ 
+       
+      </Grid>
+  </Toolbar>
 </AppBar>
 );
 }
