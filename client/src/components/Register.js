@@ -23,6 +23,19 @@ function Register()
         
     });
 
+    const [errors,updateErrors] = useState(
+        {
+            userId:"",
+            fname:"",
+            lname:"",
+            email:"",
+            password:"",
+            latitude:"",
+            longitude:""
+            
+        }
+    );
+
     const[toShow,showMap] = useState(false);
 
 

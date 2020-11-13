@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from 'react';
-import {Button, 
+import 
+{Button, 
     Divider, 
     TextField, 
     Typography,
@@ -11,9 +12,11 @@ import {Button,
     DialogActions,
     DialogTitle,
     DialogContentText,
-    DialogContent} from '@material-ui/core';
+    DialogContent,
+  CircularProgress} from '@material-ui/core';
 import {makeStyles,useTheme} from '@material-ui/core/styles'
 import NavbarProfile from '../components/NavbarProfile';
+import TeamCard from  './TeamCard';
 import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,42 +42,41 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
+
+
 function TeamInfo()
 {   
     const classes=useStyles();
     const [hasTeam,setHasTeam] = useState(false) ;
+    const [teamData,setTeamData]=useState([]);
     const [searchForm,setSearchForm] = useState({
         teamName:"",
         sport:""
 
     });
 
+
     const[dialogOpen,setDialogOpen]=useState(false);
+    const[isFetching,setIsFetching]=useState(true);
 
+const fetchTeam = async () =>{
+const apiCall= await fetch('http://localhost:5000/team-info');
+const team =await apiCall.json();
+console.log(team);
+setTeamData(...team.teams);
+setIsFetching(false);
+if(team.hasTeam==true){
+  setHasTeam(true);
+}
 
-
+}
 
     useEffect(
+      
         ()=>{
-
-            axios.get("http://localhost:5000/team-info").then(
-                (res)=>{
-                    console.log(res.data.obj);
-                    if(res.data.obj.hasTeam)
-                   { setHasTeam(true);
-                    return axios.get("http://localhost:5000/team-info")
-                  }
-                }
-            )
-            .then((res)=>{
-              
-            }
-
-           
-            );
-
-
-        } 
+          
+          fetchTeam();
+         } ,[]
      );
 
 
@@ -92,7 +94,7 @@ function TeamInfo()
     });
    }
    
-   var teamData;
+
      function handleSubmitTeamSearch()
      {
 
@@ -102,11 +104,6 @@ function TeamInfo()
             (res)=>{
 
                 console.log(res.data);
-            teamData=res.data.players;
-
-            
-              // teamData= teamArray.map((player)=><li>{player.userId+"   "+player.fname+" "+player.lname}</li>);
-              // console.log(teamData);
               setDialogOpen(true);
             }
             
@@ -116,9 +113,8 @@ function TeamInfo()
      }
 
      function joinTeam()
-     {
-
-     }
+     {}
+ 
      const noTeam =(
          <div>
          <div>
@@ -191,8 +187,15 @@ function TeamInfo()
          </div>
      );
     
+// function TeamTable(props)
+// {
+//   return(
+//     <Typography variant="h6">TeamName:{props.teamData.teamName}</Typography>
+    
 
-      //const TeamInfo=();
+//   );
+
+// }
 
     return (
        
@@ -200,9 +203,19 @@ function TeamInfo()
       <NavbarProfile/>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        { hasTeam ? <h3>Team Info</h3>
+        {
+          isFetching ?<div><CircularProgress /></div> :
+          <div>
+        { hasTeam ?
+        <li>  my teams  </li>  
+       
          : noTeam
         }
+        </div>
+
+        }
+       
+        
       </main>
     </div>
 

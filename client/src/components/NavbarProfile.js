@@ -1,5 +1,6 @@
 import React from 'react';
 import ProfileMenu from './ProfileMenu';
+import {Link} from 'react-router-dom';
 import {AppBar,CssBaseline,Divider,Drawer,Hidden,IconButton,List,ListItem,ListItemText,Typography,Toolbar,ListItemIcon} from '@material-ui/core';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
@@ -72,15 +73,19 @@ function NavbarProfile(props)
         
         <Divider />
         <List>
-          {['My Team','Grounds Near Me'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemText primary={text} />
+            <Link to='/my-team'>
+            <ListItem button key='My Teams'>
+              <ListItemText primary='My Teams' />
             </ListItem>
-          ))}
+            </Link>
+           
+            <ListItem button key='Grounds Near Me'>
+              <ListItemText primary='Grounds Near Me'/>
+            </ListItem>
+         
         </List>
         <Divider />
-        
-      </div>
+       </div>
     );
     const container = window !== undefined ? () => window().document.body : undefined;
 

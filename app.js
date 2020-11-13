@@ -6,11 +6,16 @@ const cors=require("cors");
 const jwt = require('jsonwebtoken');
 const app= express();
 const user = require('./Neo4jAPI/User');
+const auth = require('./auth');
+
+
+
+
+
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
-
 
 app.get("/",function(req,res){
 res.send("Server is running on port 5000");
@@ -25,7 +30,7 @@ var dummyUsers=[{
    latitude:19.1646,
    longitude:72.8493,
    password:"1234",
-   teamName:""
+   teams:[]
 
 },{
    userId:"sr4",
@@ -35,8 +40,52 @@ var dummyUsers=[{
    latitude:19.113646,
    longitude:72.869736,
    password:"1234",
-   teamName:"Real Madrid",
-   isCaptain:true
+   teams:["Real Madrid","Mumbai Indians"],
+   
+
+
+},{
+   userId:"rs45",
+   fname:"Rohit",
+   lname:"Sharma",
+   email:"rs45@gmail.com",
+   latitude:19.113646,
+   longitude:72.869736,
+   password:"1234",
+   teams:["Real Madrid","Mumbai Indians"],
+   
+
+
+},
+
+{
+   userId:"eh7",
+   fname:"Eden",
+   lname:"Hazard",
+   email:"edenhazard@gmail.com",
+   latitude:19.113646,
+   longitude:72.869736,
+   password:"1234",
+   teams:["Real Madrid"],
+  
+}
+
+];
+
+var dummyTeams=[{
+teamName:"Real Madrid",
+captain:"sr4",
+sport:"Football",
+players:[{
+   userId:"sr4",
+   fname:"Sergio",
+   lname:"Ramos",
+   email:"sergioramos@gmail.com",
+   latitude:19.113646,
+   longitude:72.869736,
+   password:"1234",
+   teams:["Real Madrid","Mumbai Indians"],
+   
 
 
 },
@@ -48,19 +97,48 @@ var dummyUsers=[{
    latitude:19.113646,
    longitude:72.869736,
    password:"1234",
-   teamName:"Real Madrid",
-   isCaptain:false
+   teams:["Real Madrid"],
+  
 }
 
-];
 
-var dummyTeams=[{
-teamName:"Real Madrid",
-captain:"Sergio Ramos",
-sport:"Football",
-players:["sr4","eh7"],
+],
 limit:25
 },
+{
+   teamName:"Mumbai Indians",
+   captain:"rs45",
+   sport:"Cricket",
+   players:[{
+      userId:"sr4",
+      fname:"Sergio",
+      lname:"Ramos",
+      email:"sergioramos@gmail.com",
+      latitude:19.113646,
+      longitude:72.869736,
+      password:"1234",
+      teams:["Real Madrid","Mumbai Indians"],
+      
+   
+   
+   },
+   {
+      userId:"rs45",
+      fname:"Rohit",
+      lname:"Sharma",
+      email:"rs45@gmail.com",
+      latitude:19.113646,
+      longitude:72.869736,
+      password:"1234",
+      teams:["Real Madrid","Mumbai Indians"],
+      
+   
+   
+   }],
+   limit:25
+
+
+}
 
 
 ]
@@ -127,39 +205,28 @@ app.get('/team-info',function(req,res){
    var user = dummyUsers[1];
    var obj={
    hasTeam:false,
-   teamName:""
+   teams:[]
 
    }
 
-   if(user.teamName!==""){
+   if(user.teams.length!==0)
+   {
       obj.hasTeam=true;
-      obj.teamName=user.teamName;
-   }
-   res.json({obj});
+      
+   var i;
+      for(i=0;i<user.teams.length;i++)
+      {
+         var foundteam=dummyTeams.find((team)=>user.teams[i]==team.teamName);
+         obj.teams.push(foundteam);
+      }
+     
+   
+   res.json(obj);
 
+}
 }
 );
 
-app.post('/has-team',function(req,res){
-   var user = dummyUsers[1];
- 
-  var foundTeam = dummyTeams.find((team)=>team==user.teamName);
-  var players=[];
-  foundTeam.players.forEach((player)=>{
-
-   var foundPlayer=dummyUsers.find((user)=>user.userId==player);
-   players.push(foundPlayer);
-
-
-
-  });
-  res.json({
-      teamName:foundTeam.teamName,
-      players:players
-  });
-
-
-});
 
 app.post('/team-search',function(req,res){
 
@@ -186,6 +253,14 @@ players:[]
    
 });
 
+app.get('/profile',auth,function(req,res)
+{
+   console.log(req.headers);
+   console.log(req.user)
+   res.json({
+      msg:'This is your authorized profile'
+   })
+});
 
 app.listen(5000,function(){
    console.log("Server running on port 5000"); 

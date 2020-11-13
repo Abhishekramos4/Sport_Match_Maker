@@ -1,18 +1,111 @@
 import React,{useState} from 'react';
 import  loginImg from '../images/img2.jpg';
+// import { createBrowserHistory } from 'history';
 import NavbarMain from './NavbarMain';
-import {Paper,Grid,TextField,makeStyles, Typography, Button} from '@material-ui/core';
-import {Link} from 'react-router-dom';
+import {makeStyles ,Paper,Grid,TextField, Typography, Button,Snackbar,} from '@material-ui/core';
+import  MuiAlert from '@material-ui/lab/Alert';
+import {Link,useHistory} from 'react-router-dom';
 import axios from 'axios';
+
+
+
+
+const useStyles = makeStyles((theme)=>({
+
+    loginPaper:{
+
+        margin:"20px auto",padding:"1% 2%",
+
+        [theme.breakpoints.down('sm')]:
+        {
+            width:"90%"
+      
+        },
+        [theme.breakpoints.down('md')]:
+        {
+            width:"60%"
+      
+        },
+        
+        [theme.breakpoints.up('md')]:
+        {
+            width:"40%"
+      
+        },
+        [theme.breakpoints.up('lg')]:
+        {
+            width:"40%"
+      
+        },
+
+
+    },
+  textField:{
+    marginBottom:"10px"
+
+  }
+
+
+
+}));
 
  
 
-function Login()
+
+function Login(props)
 {
+
+    const classes = useStyles();
+    const history = useHistory();
     const [loginForm,updateLoginForm] =useState({
         userId:"",
         password:""
         });
+
+    const [errors,updateErrors]=useState(
+        {
+            userId:"",
+            password:""
+            }
+            
+        );
+
+        const[openAlert,setOpenAlert]=useState(false);
+        
+
+
+
+        function handleAlertClose(event,reason)
+        {
+            if (reason === "clickaway") {
+                return;
+              }
+          
+              setOpenAlert(false);
+        }
+    
+        function isValid()
+        {
+        let formIsValid = true;
+		if (!loginForm.userId) {
+			formIsValid = false;
+			updateErrors(prevErrors => ({
+				...prevErrors,
+				userId: "UserId can't be Empty"
+			}));
+		}
+
+		if (!loginForm.password) {
+			formIsValid = false;
+			updateErrors(prevErrors => ({
+				...prevErrors,
+				password: "Please enter your password."
+			}));
+		}
+
+		return formIsValid;
+        }
+
 
         function handleChange(event )
 {
@@ -32,13 +125,33 @@ function Login()
 
 function handleSubmit()
 {
+    if(!isValid())
+    {
+        setOpenAlert(true);
+    }
+    else{
         console.log(loginForm);
         axios.post("http://localhost:5000/login",loginForm)
-        .then(res=>{console.log(res.data)})
+        .then(res=>{console.log(res.data)
+        
+        props.handleUserToken(res.data.token);
+        history.push('/profile');
+        
+        
+        }
+        
+    
+        
+        
+        )
         .catch(err=>{console.log(err)});
+    }
+       
 
 }
-    
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }    
 
 return (
 
@@ -47,36 +160,48 @@ return (
 <NavbarMain isLogin={true} />
 
 <div >
-<Paper  style={{margin:"20px auto",padding:"1% 2%",width:"50%"}}>
+<Paper elevation={5} className={classes.loginPaper}>
 
-    <img src={loginImg} width="100%" height="150px"/>
+    
 
     <form >
-    <Grid container>
-        <Grid item lg={12}>
-            <TextField 
+    
+        
+            <TextField
+            
+              className={classes.textField} 
+                variant="outlined"
                 label="User ID"
                 name="userId"
+                value={loginForm.userId}
                 onChange={handleChange}
                 fullWidth
-                required
+                
 
             />
-        </Grid>
-        <Grid item lg={12}>
+        
             <TextField 
+             className={classes.textField}
+                variant="outlined"
                 label="Password"
                 name="password" 
                 type="password"
+                value={loginForm.password}
                 onChange={handleChange}
                 fullWidth
-                required
+                
                 
             />
-        </Grid>
-    </Grid>
+
         <Link to="/register"><Typography>New User ? Register</Typography></Link>
         <Button onClick={handleSubmit}>Submit</Button>
+        <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleAlertClose}>
+        <Alert onClose={handleAlertClose} severity="error">
+        
+         
+            { errors.userId!==""? errors.userId:errors.password}
+        </Alert>
+      </Snackbar>
     </form>
 </Paper>
 </div>

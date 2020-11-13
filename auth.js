@@ -1,21 +1,30 @@
 const jwt =require('jsonwebtoken');
 
-function auth(res,req,next)
+function auth(req,res,next)
 {
 
-    const token = req.header('x-auth-token');
-    console.log(token);
+    
+    const bearer =  req.headers.authorization;
    
+    console.log(req.headers.authorization);
+    const splitBearer= bearer.split(' ');
+
+    const token = splitBearer[1];
+
+
+    console.log(token)
     if (!token) res.send(401).json({ msg: 'No token, authorization denied' });
 
     try {
         
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         
-        req.admin = decoded;
+        req.user = decoded;
+        console.log(req.user);
         next();
     }
     catch (e) {
+        console.log(e);
         res.status(400).json({ msg : 'Token is not valid' });
     }
 

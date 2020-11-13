@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import {useHistory}   from 'react-router-dom';
 import {Menu,
   MenuItem,
   IconButton,
@@ -12,6 +13,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 function ProfileMenu()
 {
+  const history=useHistory();
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -30,6 +32,12 @@ function ProfileMenu()
     
 const [logoutOpen, setlogOutOpen] = useState(false);
 const handleLogoutClose=()=>{
+  
+  setlogOutOpen(false);
+}
+const handleLogoutfunction=()=>{
+  localStorage.removeItem("userToken");
+  history.push('/');
   setlogOutOpen(false);
 }
 return (
@@ -73,7 +81,7 @@ return (
           <Button onClick={handleLogoutClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleLogoutClose} color="primary" autoFocus>
+          <Button onClick={handleLogoutfunction} color="primary" autoFocus>
             Yes
           </Button>
         </DialogActions>

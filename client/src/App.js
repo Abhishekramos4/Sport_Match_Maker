@@ -1,24 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import TeamInfo from './components/TeamInfo';
+import  Error404 from './components/Error404';
 import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
 import './App.css';
-import NavbarMain from './components/NavbarMain';
+
 
 
 function App() {
+  
+  
+  
+  const[userToken,setUserToken]=useState("");
+
+  function handleUserToken(userToken)
+  {
+      localStorage.setItem("userToken", userToken);
+      setUserToken(userToken);
+  }
   return (
   <Router>
 
   <Switch>
   <Route path="/" exact component={Home}/>
-  <Route path="/login" component={Login}  />
+  <Route path="/login" render={(props) => <Login {...props} userToken={userToken} handleUserToken={handleUserToken} />} />
   <Route path="/register" component={Register}/>
   <Route path="/profile"  component={Profile}/>
   <Route path="/my-team"  component={TeamInfo}/>
+  <Route path="*" component={Error404}/>
   </Switch>
 
   </Router>
