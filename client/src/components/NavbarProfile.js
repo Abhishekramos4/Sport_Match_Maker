@@ -55,7 +55,9 @@ backgroundColor:"black"},
 function NavbarProfile(props)
 {
 
-    const { window } = props;
+    // const { window } = props.window;
+    
+
     const classes = useStyles();
     const theme = useTheme();
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -73,11 +75,26 @@ function NavbarProfile(props)
         
         <Divider />
         <List>
-            <Link to='/my-team'>
+
+        <Link to='/scheduled-matches' style={{textDecoration:'none'}}>
+            <ListItem button key='Scheduled Matches'>
+              <ListItemText primary='Scheduled Matches' />
+            </ListItem>
+            </Link>
+
+            <Link to='/my-team' style={{textDecoration:'none'}}>
             <ListItem button key='My Teams'>
               <ListItemText primary='My Teams' />
             </ListItem>
             </Link>
+
+            <Link to='/interested-sports' style={{textDecoration:'none'}}>
+            <ListItem button key='Interested Sports'>
+              <ListItemText primary='Interested Sports' />
+            </ListItem>
+            </Link>
+
+            
            
             <ListItem button key='Grounds Near Me'>
               <ListItemText primary='Grounds Near Me'/>
@@ -87,7 +104,8 @@ function NavbarProfile(props)
         <Divider />
        </div>
     );
-    const container = window !== undefined ? () => window().document.body : undefined;
+   
+    const container = undefined;
 
 return (
 <div>
@@ -104,7 +122,7 @@ return (
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-           Fname Lname
+          {props.fname +" "+ props.lname}
           </Typography>
 
           <ProfileMenu />

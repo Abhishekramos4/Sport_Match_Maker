@@ -54,8 +54,6 @@ var dummyUsers=[{
    password:"1234",
    teams:["Real Madrid","Mumbai Indians"],
    
-
-
 },
 
 {
@@ -74,6 +72,11 @@ var dummyUsers=[{
 
 var dummyTeams=[{
 teamName:"Real Madrid",
+teamLocation:{
+   latitude:19.113646,
+   longitude:72.869736,
+
+},
 captain:"sr4",
 sport:"Football",
 players:[{
@@ -107,6 +110,10 @@ limit:25
 },
 {
    teamName:"Mumbai Indians",
+   teamLocation:{
+      latitude:19.113646,
+      longitude:72.869736,
+   },
    captain:"rs45",
    sport:"Cricket",
    players:[{
@@ -258,6 +265,7 @@ app.get('/profile',auth,function(req,res)
    console.log(req.headers);
    console.log(req.user)
    res.json({
+      userData:req.user.foundUser,
       msg:'This is your authorized profile'
    })
 });
