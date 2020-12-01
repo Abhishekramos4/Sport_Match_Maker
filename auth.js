@@ -13,7 +13,7 @@ function auth(req,res,next)
 
 
     console.log(token)
-    if (!token) res.send(401).json({ msg: 'No token, authorization denied' });
+    if (token == null) res.status(401).json({ msg: 'No token, authorization denied' });
 
     try {
         

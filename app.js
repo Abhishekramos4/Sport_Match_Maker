@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken');
 const app= express();
 const user = require('./Neo4jAPI/User');
 const auth = require('./auth');
-
+const driver = require("./Neo4jAPI/config");
+const team = require("./Neo4jAPI/Team");
 
 
 
@@ -168,7 +169,7 @@ app.post("/register",async (req,res) => {
 
 });
 
-app.post("/login",function(req,res)
+app.post("/login",async (req,res) => 
 {
 
 //Dummy Users :
@@ -179,22 +180,51 @@ var loginObj={
    password:req.body.password
 }
 
-var foundUser=dummyUsers.find(user=>user.userId==loginObj.userId);
-if(!foundUser) {res.json({msg:"Please register first"});}
-else if(foundUser.password!=loginObj.password)
-{
-   res.json({msg:"Invalid Credentials"});
+const session = driver.session();
+
+session
+  .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
+  .then((result) => {
+    console.log(result.records[0].get(0));
+    if (loginObj.password === result.records[0].get(0).properties.password) {
+         const token = jwt.sign(
+           result.records[0].get(0).properties,
+           process.env.SECRET_KEY
+         );
+         res.json({ user: result.records[0].get(0).properties, token: token });
+    }else{
+       console.log("Invalid Credetials");
+       throw {
+          password : "not found",
+          status : 400
+       }
+    }
+    // return (response);
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+  .finally(() => {
+    session.close();
+  });
+
+
+
+
    
-}
-else{
+});
 
-   const token=jwt.sign({foundUser},process.env.SECRET_KEY);
-   res.json({user:foundUser,token:token});
-}
+app.post('/create-team', async (req,res) => {
+   var teamInfo = {
+      name : req.body.name,
+      players : req.body.players,
+      captain : req.body.captain,
+      sports : req.body.sports,
+   }
+
+   var result = await team.createTeam(teamInfo);
 
 
-
-   
 });
 
 app.get('/team-info',function(req,res){
