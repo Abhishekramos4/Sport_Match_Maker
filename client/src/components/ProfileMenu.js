@@ -8,7 +8,8 @@ import {Menu,
   DialogActions,
   DialogTitle,
   DialogContent,
-  DialogContentText} from '@material-ui/core'
+  DialogContentText} from '@material-ui/core';
+import Notification from './Notification';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 function ProfileMenu()
@@ -42,6 +43,9 @@ const handleLogoutfunction=()=>{
 }
 return (
 <div>
+
+<Notification/>
+
       <IconButton   aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{color:"white",position:"absolute",right:"2%",top:"4%"}}>
         <AccountCircleIcon/>   
       </IconButton>

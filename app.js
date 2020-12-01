@@ -1,27 +1,22 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors=require("cors");
-const jwt = require('jsonwebtoken');
-const app= express();
-const user = require('./Neo4jAPI/User');
-const auth = require('./auth');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const app = express();
+const user = require("./Neo4jAPI/User");
+const auth = require("./auth");
 const driver = require("./Neo4jAPI/config");
 const team = require("./Neo4jAPI/Team");
 
-
-
-
-
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/",function(req,res){
-res.send("Server is running on port 5000");
+app.get("/", function (req, res) {
+  res.send("Server is running on port 5000");
 });
-
 
 // var dummyUsers=[{
 //    userId:"ab12",
@@ -42,8 +37,6 @@ res.send("Server is running on port 5000");
 //    longitude:72.869736,
 //    password:"1234",
 //    teams:["Real Madrid","Mumbai Indians"],
-   
-
 
 // },{
 //    userId:"rs45",
@@ -54,8 +47,6 @@ res.send("Server is running on port 5000");
 //    longitude:72.869736,
 //    password:"1234",
 //    teams:["Real Madrid","Mumbai Indians"],
-   
-
 
 // },
 
@@ -68,7 +59,7 @@ res.send("Server is running on port 5000");
 //    longitude:72.869736,
 //    password:"1234",
 //    teams:["Real Madrid"],
-  
+
 // }
 
 // ];
@@ -86,8 +77,6 @@ res.send("Server is running on port 5000");
 //    longitude:72.869736,
 //    password:"1234",
 //    teams:["Real Madrid","Mumbai Indians"],
-   
-
 
 // },
 // {
@@ -99,9 +88,8 @@ res.send("Server is running on port 5000");
 //    longitude:72.869736,
 //    password:"1234",
 //    teams:["Real Madrid"],
-  
-// }
 
+// }
 
 // ],
 // limit:25
@@ -119,9 +107,7 @@ res.send("Server is running on port 5000");
 //       longitude:72.869736,
 //       password:"1234",
 //       teams:["Real Madrid","Mumbai Indians"],
-      
-   
-   
+
 //    },
 //    {
 //       userId:"rs45",
@@ -132,163 +118,171 @@ res.send("Server is running on port 5000");
 //       longitude:72.869736,
 //       password:"1234",
 //       teams:["Real Madrid","Mumbai Indians"],
-      
-   
-   
+
 //    }],
 //    limit:25
 
-
 // }
-
 
 // ]
 
-app.post("/register",async (req,res) => {
+app.post("/register", async (req, res) => {
+  var registerObj = {
+    userId: req.body.userId,
+    fname: req.body.fname,
+    lname: req.body.lname,
+    email: req.body.email,
+    password: req.body.password,
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
+  };
 
+  // dummyUsers.push(registerObj);
+  // console.log(dummyUsers);
+  var result = await user.createUser(registerObj);
+  console.log(result);
 
-
-   var registerObj =  { userId: req.body.userId,
-      fname:req.body.fname,
-      lname:req.body.lname,
-      email:req.body.email,
-      password:req.body.password,
-      latitude:req.body.latitude,
-      longitude:req.body.longitude
-   }
-   
-   // dummyUsers.push(registerObj);
-   // console.log(dummyUsers);
-   var result = await user.createUser(registerObj)
-   console.log(result);
-   
-   
-   res.json({
-     msg:"sucess" 
-   });
-
-});
-
-app.post("/login",async (req,res) => 
-{
-
-//Dummy Users :
-
-
-var loginObj={
-   userId:req.body.userId,
-   password:req.body.password
-}
-
-const session = driver.session();
-
-session
-  .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
-  .then((result) => {
-    console.log(result.records[0].get(0));
-    if (loginObj.password === result.records[0].get(0).properties.password) {
-         const token = jwt.sign(
-           result.records[0].get(0).properties,
-           process.env.SECRET_KEY
-         );
-         res.json({ user: result.records[0].get(0).properties, token: token });
-    }else{
-       console.log("Invalid Credetials");
-       throw {
-          password : "not found",
-          status : 400
-       }
-    }
-    // return (response);
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally(() => {
-    session.close();
+  res.json({
+    msg: "sucess",
   });
-
-
-
-
-   
 });
 
-app.post('/create-team', async (req,res) => {
-   var teamInfo = {
-      name : req.body.name,
-      players : req.body.players,
-      captain : req.body.captain,
-      sports : req.body.sports,
-   }
+app.post("/login", async (req, res) => {
+  //Dummy Users :
 
-   var result = await team.createTeam(teamInfo);
+  var loginObj = {
+    userId: req.body.userId,
+    password: req.body.password,
+  };
 
+  const session = driver.session();
 
-});
-
-app.get('/team-info',function(req,res){
-
-   var user = dummyUsers[1];
-   var obj={
-   hasTeam:false,
-   teams:[]
-
-   }
-
-   if(user.teams.length!==0)
-   {
-      obj.hasTeam=true;
-      
-   var i;
-      for(i=0;i<user.teams.length;i++)
-      {
-         var foundteam=dummyTeams.find((team)=>user.teams[i]==team.teamName);
-         obj.teams.push(foundteam);
+  session
+    .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
+    .then((result) => {
+      console.log(result.records[0].get(0));
+      if (loginObj.password === result.records[0].get(0).properties.password) {
+        const token = jwt.sign(
+          result.records[0].get(0).properties,
+          process.env.SECRET_KEY
+        );
+        res.json({ user: result.records[0].get(0).properties, token: token });
+      } else {
+        console.log("Invalid Credetials");
+        throw {
+          password: "not found",
+          status: 400,
+        };
       }
-     
-   
-   res.json(obj);
-
-}
-}
-);
-
-
-app.post('/team-search',function(req,res){
-
-   var teamName=req.body.teamName;
-   var sport =req.body.sport;
-var obj={msg:"",
-players:[]
-}
-   var foundTeam = dummyTeams.find(team=>team.teamName==teamName && team.sport == sport);
-   if(foundTeam==null) {
-      obj.msg="No Team Found";
-   }
-   else{
-      var i;
-      for(i=0;i<foundTeam.players.length;i++)
-      {
-        
-         var playerinfo = dummyUsers.find(user=>user.userId==foundTeam.players[i]);
-         obj.players.push(playerinfo);
-      }
-      obj.msg="Team Found"
-   }
-   res.json(obj);
-   
+      // return (response);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      session.close();
+    });
 });
 
-app.get('/profile',auth,function(req,res)
-{
-   console.log(req.headers);
-   console.log(req.user)
-   res.json({
-      msg:'This is your authorized profile'
-   })
+app.post("/create-team", async (req, res) => {
+  var teamInfo = {
+    name: req.body.name,
+    players: req.body.players,
+    captain: req.body.captain,
+    sports: req.body.sports,
+  };
+
+  await team.createTeam(teamInfo);
 });
 
-app.listen(5000,function(){
-   console.log("Server running on port 5000"); 
-})
+app.get("/team-info", function (req, res) {
+  var user = dummyUsers[1];
+  var obj = {
+    hasTeam: false,
+    teams: [],
+  };
+
+  if (user.teams.length !== 0) {
+    obj.hasTeam = true;
+
+    var i;
+    for (i = 0; i < user.teams.length; i++) {
+      var foundteam = dummyTeams.find((team) => user.teams[i] == team.teamName);
+      obj.teams.push(foundteam);
+    }
+
+    res.json(obj);
+  }
+});
+
+app.post("/team-search", function (req, res) {
+  var teamSearchObj = {
+    teamName: req.body.teamName,
+    sport: req.body.sport,
+  };
+
+  var obj = { msg: "", team: [] };
+
+  const session = driver.session();
+
+  if (teamName != null) {
+    session
+      .run("MATCH(t:Team {name: $teamName})", teamSearchObj)
+      .then((result) => {
+        if (result != null) {
+          obj.team.push(result.records[0].get(0).properties);
+          obj.msg = "Team Found";
+        } else {
+          obj.msg = "Team Not Found";
+        }
+      })
+      .finally(() => {
+        session.close();
+      });
+  } else {
+    session
+      .run("MATCH(t:Team{sport: $sport})", teamSearchObj)
+      .then((result) => {
+        var teams = result.records[0].get(0).properties;
+        if (teams != null) {
+          obj.team = teams;
+          obj.msg = "Team Found";
+        } else {
+          obj.msg = "Team Not Found";
+        }
+      })
+      .finally(() => {
+        session.close();
+      });
+  }
+
+//   var foundTeam = dummyTeams.find(
+//     (team) => team.teamName == teamName && team.sport == sport
+//   );
+//   if (foundTeam == null) {
+//     obj.msg = "No Team Found";
+//   } else {
+//     var i;
+//     for (i = 0; i < foundTeam.players.length; i++) {
+//       var playerinfo = dummyUsers.find(
+//         (user) => user.userId == foundTeam.players[i]
+//       );
+//       obj.players.push(playerinfo);
+//     }
+//     obj.msg = "Team Found";
+//   }
+  res.json(obj);
+});
+
+app.get("/profile", auth, function (req, res) {
+  console.log(req.headers);
+  console.log(req.user);
+  res.json({
+    userData: req.user.foundUser,
+    msg: "This is your authorized profile",
+  });
+});
+
+app.listen(5000, function () {
+  console.log("Server running on port 5000");
+});

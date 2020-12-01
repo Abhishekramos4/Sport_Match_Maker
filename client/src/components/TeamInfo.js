@@ -1,6 +1,9 @@
-import React,{useEffect,useState} from 'react';
+import React,{useEffect,useState,forwardRef} from 'react';
 import 
-{Button, 
+{Button,
+  Card,CardActionArea,CardContent, 
+  List,
+  ListItem,
     Divider, 
     TextField, 
     Typography,
@@ -13,11 +16,17 @@ import
     DialogTitle,
     DialogContentText,
     DialogContent,
+    Slide,
+    AppBar,
+    Toolbar,
+    IconButton,
   CircularProgress} from '@material-ui/core';
+  import CloseIcon from '@material-ui/icons/Close'
 import {makeStyles,useTheme} from '@material-ui/core/styles'
 import NavbarProfile from '../components/NavbarProfile';
 import TeamCard from  './TeamCard';
 import axios from 'axios';
+import SelectedTeam from './SelectedTeam';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -41,7 +50,9 @@ const useStyles = makeStyles((theme) => ({
       }
   }));
 
-
+  const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 
 function TeamInfo()
@@ -58,12 +69,30 @@ function TeamInfo()
 
     const[dialogOpen,setDialogOpen]=useState(false);
     const[isFetching,setIsFetching]=useState(true);
+    const [openTeamDialog, setOpenTeamDialog] = useState(false);
+    const [dialogData,setdialogData]=useState({
+      teamName:"",
+      players:[]
+    });
+const handleClickOpenDialog = (teamName,players) => {
+ setdialogData({
+   teamName:teamName,
+    players:[...players]
+ })
+  setOpenTeamDialog(true);
+};
+
+const handleCloseDialog = () => {
+
+  setOpenTeamDialog(false);
+  
+};
 
 const fetchTeam = async () =>{
 const apiCall= await fetch('http://localhost:5000/team-info');
 const team =await apiCall.json();
 console.log(team);
-setTeamData(...team.teams);
+setTeamData(team.teams);
 setIsFetching(false);
 if(team.hasTeam==true){
   setHasTeam(true);
@@ -80,7 +109,9 @@ if(team.hasTeam==true){
      );
 
 
+
    
+    
 
    function handleChangeSearchTeam(event)
    { 
@@ -115,6 +146,8 @@ if(team.hasTeam==true){
      function joinTeam()
      {}
  
+    
+
      const noTeam =(
          <div>
          <div>
@@ -197,6 +230,8 @@ if(team.hasTeam==true){
 
 // }
 
+
+
     return (
        
         <div className={classes.root}>
@@ -207,7 +242,29 @@ if(team.hasTeam==true){
           isFetching ?<div><CircularProgress /></div> :
           <div>
         { hasTeam ?
-        <li>  my teams  </li>  
+        <div>
+        <List>
+        {
+           teamData.map((team,index)=>{
+           return(
+            
+             <ListItem key={index}>
+              <TeamCard teamName={team.teamName} sport={team.sport} players={team.players} openFunc={handleClickOpenDialog}/>
+             </ListItem>
+         
+            
+            
+             );
+           
+          
+         })
+         }
+         </List>
+         <Dialog fullScreen open={openTeamDialog} onClose={handleCloseDialog} TransitionComponent={Transition} >
+       <SelectedTeam teamName={dialogData.teamName} players={dialogData.players} closeFunc={handleCloseDialog} />
+         </Dialog>
+        </div>
+        
        
          : noTeam
         }
