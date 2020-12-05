@@ -1,4 +1,4 @@
-const turfs=[
+[
 
 {
     "Name": "Get Set Play",
@@ -603,5 +603,5 @@ const turfs=[
     "Contact": "",
     "Ratings": "0",
     "Location": null
-}];
+}]
 
