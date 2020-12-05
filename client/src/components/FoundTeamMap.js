@@ -22,7 +22,7 @@ function Map(props)
 
    var teamPopups=[];
    
-
+   
 
    for(var i=0;i<teams.length;i++)
    {

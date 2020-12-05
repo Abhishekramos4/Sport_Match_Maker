@@ -73,7 +73,9 @@ function handleAlertClose(event,reason)
 
 useEffect(()=>{
 
-//axios.get
+// axios.get("http://localhost:5000/get-interested-sports").then((res)=>{
+// setInterest([...res.arr]);
+// });
 var myInterest=['Football','Cricket','Chess'];
 setInterest([...myInterest]);
 
@@ -98,6 +100,7 @@ console.log(obj)
 },[interest]
 );
 
+
 const handleAddRemove= (sport)=>
 {
   
@@ -121,8 +124,20 @@ const handleAddRemove= (sport)=>
 
 function handleApply()
 {
-    //axios.post
-    history.push('/profile');
+   var dataArr=[];
+   for(let[key,value] of boolInterest)
+   {
+        if(value==true)
+        {
+            dataArr.push(key);
+        }
+   }
+   
+    // axios.post("http://localhost:5000/set-interested-sports",dataArr).then((res)=>{
+    //     history.push('/profile');
+    // });
+    console.log(dataArr);
+    // history.push('/profile');
     
 
 
@@ -165,7 +180,7 @@ return(
 <main className={classes.content}>
 <div className={classes.toolbar} />
 
-<Typography variant='h4' style={{marginBottom:"2%"}}>Team Sports</Typography>
+{/* <Typography variant='h4' style={{marginBottom:"2%"}}>Team Sports</Typography>
 
 <Grid container spacing={3} justify="center" style={{marginBottom:"50px"}}>
 <Grid item xs={12} md={4} sm={6}>
@@ -220,7 +235,7 @@ return(
 
 </Grid>
 
-<Divider style={{marginBottom:"2%"}}/>
+<Divider style={{marginBottom:"2%"}}/> */}
 <Typography variant='h4' style={{marginBottom:"2%"}}>Individual Sports</Typography>
 <Grid container spacing={3} style={{marginBottom:"50px"}}>
 <Grid item xs={12}   sm={6} md={4}>
@@ -281,10 +296,18 @@ return(
 </Grid>
 </Grid>
 
-<Divider/>
+<Divider style={{marginBottom:"2%"}}/>
 
 <MyAlert isAdd={alertState[0]} sport={alertState[1]} />
-<Button onClick={handleApply}>Apply</Button>
+<Grid container>
+<Grid item md={10}>
+
+</Grid>
+<Grid item md={2}>
+<Button onClick={handleApply} variant="outlined" style={{width:"100%",backgroundColor:"black",color:"white"}}>Apply</Button>
+</Grid>
+</Grid>
+
 
 </main>
 </div>

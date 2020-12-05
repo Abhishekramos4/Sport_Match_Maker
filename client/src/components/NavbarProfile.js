@@ -2,14 +2,19 @@ import React from 'react';
 import ProfileMenu from './ProfileMenu';
 import {Link} from 'react-router-dom';
 import {AppBar,CssBaseline,Divider,Drawer,Hidden,IconButton,List,ListItem,ListItemText,Typography,Toolbar,ListItemIcon} from '@material-ui/core';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import MenuIcon from '@material-ui/icons/Menu';
+import GroupIcon from '@material-ui/icons/Group';
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import RoomIcon from '@material-ui/icons/Room';
 import SportsSoccerIcon from '@material-ui/icons/SportsSoccer';
+import SportsIcon from '@material-ui/icons/Sports';
+import SearchIcon from '@material-ui/icons/Search';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +51,10 @@ backgroundColor:"black"},
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+  },
+  links:{
+    textDecoration:'none',
+    color:"black"
   }
 }));
 
@@ -75,30 +84,55 @@ function NavbarProfile(props)
         
         <Divider />
         <List>
-
-        <Link to='/scheduled-matches' style={{textDecoration:'none'}}>
-            <ListItem button key='Scheduled Matches'>
-              <ListItemText primary='Scheduled Matches' />
+        <Link to='/scheduled-matches' className={classes.links}>
+            
+            <ListItem button key='Find A Match'>
+            <ListItemIcon><SearchIcon/></ListItemIcon>
+              <ListItemText primary='Find A Match' />
             </ListItem>
             </Link>
+            <Link to='/scheduled-matches' className={classes.links}>
+            
+            <ListItem button key='Scheduled Match'>
+            <ListItemIcon><AccessTimeIcon/></ListItemIcon>
+              <ListItemText primary='Scheduled Match' />
+            </ListItem>
+            </Link> 
+       
+       <Divider/>
 
-            <Link to='/my-team' style={{textDecoration:'none'}}>
+            <Link to='/my-team' className={classes.links}>
             <ListItem button key='My Teams'>
+            <ListItemIcon><GroupIcon/></ListItemIcon>
               <ListItemText primary='My Teams' />
             </ListItem>
             </Link>
 
-            <Link to='/interested-sports' style={{textDecoration:'none'}}>
+            <Link to='/join-team' className={classes.links} >
+            
+            <ListItem button key='Join Team'>
+            <ListItemIcon><GroupAddIcon/></ListItemIcon>
+              <ListItemText primary='Join Team'/>
+            </ListItem>
+            </Link>
+            <Divider/>
+
+            <Link to='/interested-sports' className={classes.links}>
             <ListItem button key='Interested Sports'>
+            <ListItemIcon><SportsIcon/></ListItemIcon>
               <ListItemText primary='Interested Sports' />
             </ListItem>
             </Link>
 
-            
-           
+            <Divider/>
+            <Link to='/grounds-near-me' className={classes.links}>
             <ListItem button key='Grounds Near Me'>
+            <ListItemIcon><RoomIcon/></ListItemIcon>
               <ListItemText primary='Grounds Near Me'/>
             </ListItem>
+            </Link>
+            
+            
          
         </List>
         <Divider />

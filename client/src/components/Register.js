@@ -4,7 +4,7 @@ import Map from './Map';
 import {Paper,Grid,TextField,makeStyles, Typography, Button} from '@material-ui/core';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
-
+import FooterMain from './FooterMain';
 
 
 
@@ -115,7 +115,7 @@ function Register()
 
      <div>
 <NavbarMain isLogin={true} />
-<Paper style={{margin:"5px",padding:"2px", width:"40%"}}>
+<Paper style={{margin:"5px",padding:"5px", width:"40%"}}>
 <form >
 <Grid container>
 <Grid item lg={12}>
@@ -125,6 +125,7 @@ function Register()
     onChange={handleChange}
     fullWidth
     required
+    variant="outlined"
 
 />
 </Grid>
@@ -205,6 +206,7 @@ function Register()
 </form>
 </Paper>
 <div>{toShow? <Map latitude={registerForm['latitude']} longitude={registerForm['longitude']}/>:null}</div>
+<FooterMain/>
 </div>
  );
  }

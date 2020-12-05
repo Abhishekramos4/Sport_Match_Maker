@@ -1,39 +1,66 @@
 import React,{useState,useEffect} from 'react';
+import NavbarProfile from './NavbarProfile'
 import GroundsMap from './GroundsMap';
+import {makeStyles} from '@material-ui/core/styles'
 import axios from 'axios';
+
+const useStyles=makeStyles((theme)=>(
+    {
+
+        root: {
+            display: 'flex',
+          },
+          toolbar:theme.mixins.toolbar,
+         
+        
+          content: {
+            flexGrow: 1,
+            padding: theme.spacing(3),
+          }
+        }
+));
+
 function GroundNearMe()
 {
-
+const classes=useStyles();
 const [groundData,setGroundData]=useState([]);
 
     useEffect(()=>{
 
  //axios.post
-var arr=[{"Name": "Dream Sports Fields Pvt Ltd..",
-"Address": "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
-"Contact": "07947172083",
-"Ratings": "4.1",
-"Location": {
-    "lil": "19.1251368",
-    "lon": "72.841665"
+var arr=[{"name": "Dream Sports Fields Pvt Ltd..",
+address: "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
+contact: "07947172083",
+ratings: "4.1",
+location: {
+    lat: 19.1251368,
+    lon: 72.841665
 },
 },
 {
-    "Name": "Get Set Play",
-    "Address": "Piramal Agastya Private Limited, Kamani-kurla West, Mumbai - 400070, Opposite Fire Brigade",
-    "Contact": "07947190450",
-    "Ratings": "5.0",
-    "Location": {
-        "lil": "19.0867259",
-        "lon": "72.8860501"
+    name: "Get Set Play",
+    address: "Piramal Agastya Private Limited, Kamani-kurla West, Mumbai - 400070, Opposite Fire Brigade",
+   contact: "07947190450",
+    ratings: "5.0",
+   location: {
+        lat: 19.0867259,
+        lon: 72.8860501
     }
 }
-]
+];
  setGroundData(arr);
 
-    });
+    },[]);
 return (
-<GroundsMap groundData={groundData}/>
+
+<div className={classes.root}>
+<NavbarProfile/>
+<main className={classes.content}>
+<div className={classes.toolbar} />
+<GroundsMap myLat={19.113646} myLon={72.869736} groundData={groundData}/>
+</main>
+</div>
+
 
 );
 

@@ -1,9 +1,10 @@
-import react from 'react';
+import React,{useState,useEffect,useRef} from 'react';
+import mapboxgl from 'mapbox-gl';
 
 function GroundsMap(props)
 {
 
-
+console.log(props);
 
 const mapContainerStyle={
 
@@ -16,7 +17,7 @@ const mapContainerStyle={
 
 const [map, setMap] = useState(null);
 const mapContainer = useRef(null);
-const {groundData}=props;
+const {myLat,myLon,groundData}=props;
 
 
 
@@ -26,20 +27,22 @@ var groundPopups=[
   
 ];
 
+// console.log(groundData[0].name);
 
-
-for(var i=0;i<teams.length;i++)
+for(var i=0;i<groundData.length;i++)
 {
 groundPopups.push({
   'type': 'Feature',
   'properties': {
   'description':
-  '<h5>'+groundData[i].teamName+'</h5>',
+  '<h5>'+groundData[i].name+'</h5>',
+
+
   'icon': 'theatre'
   },
   'geometry': {
   'type': 'Point',
-  'coordinates': [ teams[i].teamLocation.longitude,teams[i].teamLocation.latitude]
+  'coordinates': [ groundData[i].location.lon,groundData[i].location.lat]
   }
   })
 
@@ -59,11 +62,11 @@ useEffect(() => {
     });
    
    const popup = new mapboxgl.Popup({ closeOnClick: false })
-.setLngLat([props.longitude, props.latitude])
+.setLngLat([myLon, myLat])
 .setText('Your Location')
 .addTo(map);
 
-const marker = new mapboxgl.Marker().setLngLat([longitude,latitude]).setPopup(popup).addTo(map);
+const marker = new mapboxgl.Marker().setLngLat([myLon,myLat]).setPopup(popup).addTo(map);
 
 
 map.on("load", () => {
@@ -73,7 +76,7 @@ map.on("load", () => {
         'type': 'geojson',
         'data': {
         'type': 'FeatureCollection',
-        'features': teamPopups
+        'features': groundPopups
     }}
       );
 

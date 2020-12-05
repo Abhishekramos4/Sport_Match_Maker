@@ -1,12 +1,13 @@
 import React,{useState} from 'react';
-import  loginImg from '../images/img2.jpg';
+import  loginImg from '../images/img3.jpg';
 // import { createBrowserHistory } from 'history';
 import NavbarMain from './NavbarMain';
-import {makeStyles ,Paper,Grid,TextField, Typography, Button,Snackbar,} from '@material-ui/core';
+import {makeStyles ,Paper,Grid,TextField, Typography, Button,Snackbar,Card
+} from '@material-ui/core';
 import  MuiAlert from '@material-ui/lab/Alert';
 import {Link,useHistory} from 'react-router-dom';
 import axios from 'axios';
-
+import FooterMain from './FooterMain';
 
 
 
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme)=>({
         },
         [theme.breakpoints.down('md')]:
         {
-            width:"60%"
+            width:"75%"
       
         },
         
@@ -160,9 +161,16 @@ return (
 <NavbarMain isLogin={true} />
 
 <div >
-<Paper elevation={5} className={classes.loginPaper}>
+<Paper elevation={5} className={classes.loginPaper} style={{height:"450px"}}>
 
-    
+
+    {/* <Card style={{
+        
+        backgroundImage:{loginImg}
+    }}> */}
+{/* 
+    </Card> */}
+    <img src={loginImg} height="250px" width="100%"/>
 
     <form >
     
@@ -194,7 +202,12 @@ return (
             />
 
         <Link to="/register"><Typography>New User ? Register</Typography></Link>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <Grid container>
+            <Grid item xs={0} md={9}> </Grid>
+            <Grid item xs={12} md={3}>  <Button onClick={handleSubmit} variant="outlined"  style={{backgroundColor:"black",color:"white",width:"100%"}}>Submit</Button></Grid>
+        </Grid>
+
+       
         <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleAlertClose}>
         <Alert onClose={handleAlertClose} severity="error">
         
@@ -205,7 +218,7 @@ return (
     </form>
 </Paper>
 </div>
-
+<FooterMain/>
 
 
 </div>
