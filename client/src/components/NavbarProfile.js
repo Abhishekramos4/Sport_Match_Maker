@@ -84,7 +84,7 @@ function NavbarProfile(props)
         
         <Divider />
         <List>
-        <Link to='/scheduled-matches' className={classes.links}>
+        <Link to='/profile' className={classes.links}>
             
             <ListItem button key='Find A Match'>
             <ListItemIcon><SearchIcon/></ListItemIcon>

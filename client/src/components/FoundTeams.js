@@ -37,15 +37,49 @@ function FoundTeams(props)
 {
     const classes = useStyles();
    
-    const [sent,setSent]=useState(false);
-
+    
     const{nearbyTeams} = props;
 
+//   console.log(nearbyTeams);
+    const[teams,setTeams] = useState([]);
+  
+    useEffect(()=>{
+        
+        console.log(nearbyTeams);
+        var arr= [ nearbyTeams.map((team)=>{
+            return(
+                {
+                    ...team,
+                    sent:false
+                }
+            );
+        })];
+        setTeams(arr);
+    },[]);
 
-function sendMatchRequest()
+    useEffect(()=>{
+        console.log(teams);
+    },[teams])
+
+    
+
+function sendMatchRequest(teamName)
 {
-        //axios.post
-        setSent(true);
+        // axios.post()
+    //     console.log(teamName);
+    //     console.log(teams);
+    //    var i = teams.findIndex((obj)=>{
+    //        return obj.teamName==teamName;
+    //     });
+
+    //     setTeams((prev)=>{
+    //         prev[i]={
+    //             ... prev[i],
+    //             sent:true
+    //         }
+    //     });
+
+        
 }
 
     return(
@@ -66,10 +100,16 @@ function sendMatchRequest()
         </Grid>
         <Grid item md={6}>
             <List>
-                {
-                    nearbyTeams.map((team,index)=>{
+                {/* {
+                    console.log(teams)
+                    
+                    }                   
+                    <ListItem key="ab">
+                        {teams[0].teamName}
+                    </ListItem> */}
+                     {/* teams.map((team,index)=>{
                         return (
-                            <ListItem key={index}>
+                            <ListItem key={team.teamName}>
                                 <Card className={classes.teamCard}>
                                     <CardContent>
                                         <Typography>
@@ -78,12 +118,14 @@ function sendMatchRequest()
                                     </CardContent>
                                     <CardActions>
                                     {
-                                        sent?
+                                        team.sent?
                                         <Button >
                                                 Request Sent
                                             </Button>
                                         :
-                                        <Button onClick={sendMatchRequest}>
+                                        <Button onClick={()=>{
+                                            sendMatchRequest(team.teamName);
+                                        }}>
                                                 Send Request
                                             </Button>
 
@@ -94,8 +136,8 @@ function sendMatchRequest()
                             </ListItem>
 
                         );
-                    })
-                }
+                    }) */}
+                
             </List>
         </Grid>
     </Grid>

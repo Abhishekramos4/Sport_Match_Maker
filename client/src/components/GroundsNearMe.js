@@ -28,7 +28,7 @@ const [groundData,setGroundData]=useState([]);
     useEffect(()=>{
 
  //axios.post
-var arr=[{"name": "Dream Sports Fields Pvt Ltd..",
+var arr=[{name: "Dream Sports Fields Pvt Ltd..",
 address: "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
 contact: "07947172083",
 ratings: "4.1",
@@ -51,6 +51,7 @@ location: {
  setGroundData(arr);
 
     },[]);
+console.log(groundData[0]);
 return (
 
 <div className={classes.root}>

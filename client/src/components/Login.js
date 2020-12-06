@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme)=>({
 
     loginPaper:{
 
-        margin:"20px auto",padding:"1% 2%",
+        margin:"20px auto",padding:"2%",
 
         [theme.breakpoints.down('sm')]:
         {
@@ -42,8 +42,33 @@ const useStyles = makeStyles((theme)=>({
 
     },
   textField:{
-    marginBottom:"10px"
+    marginBottom:"3%"
 
+  },
+  loginText:{
+    [theme.breakpoints.down('sm')]:
+    {
+       
+        fontSize:"20px"
+        
+    },
+    [theme.breakpoints.down('md')]:
+    {
+        fontSize:"40px"
+  
+    },
+    
+    [theme.breakpoints.up('md')]:
+    {
+       fontSize:"50px"
+  
+    },
+    [theme.breakpoints.up('lg')]:
+    {
+       fontSize:"60px"
+       
+  
+    },
   }
 
 
@@ -65,9 +90,9 @@ function Login(props)
 
     const [errors,updateErrors]=useState(
         {
-            userId:"",
-            password:""
-            }
+            msg:""
+            
+        }
             
         );
 
@@ -88,20 +113,10 @@ function Login(props)
         function isValid()
         {
         let formIsValid = true;
-		if (!loginForm.userId) {
+		if (!loginForm.userId || !loginForm.password) {
 			formIsValid = false;
-			updateErrors(prevErrors => ({
-				...prevErrors,
-				userId: "UserId can't be Empty"
-			}));
-		}
-
-		if (!loginForm.password) {
-			formIsValid = false;
-			updateErrors(prevErrors => ({
-				...prevErrors,
-				password: "Please enter your password."
-			}));
+			updateErrors({msg: "Please fill Empty fields"});
+			
 		}
 
 		return formIsValid;
@@ -133,10 +148,11 @@ function handleSubmit()
     else{
         console.log(loginForm);
         axios.post("http://localhost:5000/login",loginForm)
-        .then(res=>{console.log(res.data)
+        .then(res=>{
+        console.log(res.data);
         
-        props.handleUserToken(res.data.token);
-        history.push('/profile');
+        // props.handleUserToken(res.data.token);
+        // history.push('/profile');
         
         
         }
@@ -161,16 +177,18 @@ return (
 <NavbarMain isLogin={true} />
 
 <div >
-<Paper elevation={5} className={classes.loginPaper} style={{height:"450px"}}>
+<Paper elevation={5} className={classes.loginPaper} >
 
 
-    {/* <Card style={{
-        
-        backgroundImage:{loginImg}
-    }}> */}
-{/* 
-    </Card> */}
-    <img src={loginImg} height="250px" width="100%"/>
+   <div style={{position:"relative",
+     color:"white",
+        textAlign:"center",marginBottom:"2%"}}>
+   <img src={loginImg} height="250px" width="100%"/>
+   <div style={{position:"absolute",bottom:"10%" ,left:"35%"}}>
+       <Typography className={classes.loginText}>Login</Typography>
+   </div>
+   </div>
+    
 
     <form >
     
@@ -183,6 +201,7 @@ return (
                 name="userId"
                 value={loginForm.userId}
                 onChange={handleChange}
+                autoComplete="off"
                 fullWidth
                 
 
@@ -196,6 +215,7 @@ return (
                 type="password"
                 value={loginForm.password}
                 onChange={handleChange}
+                autoComplete="off"
                 fullWidth
                 
                 
@@ -204,7 +224,7 @@ return (
         <Link to="/register"><Typography>New User ? Register</Typography></Link>
         <Grid container>
             <Grid item xs={0} md={9}> </Grid>
-            <Grid item xs={12} md={3}>  <Button onClick={handleSubmit} variant="outlined"  style={{backgroundColor:"black",color:"white",width:"100%"}}>Submit</Button></Grid>
+            <Grid item xs={12} md={3}>  <Button onClick={handleSubmit} variant="outlined"  style={{backgroundColor:"black",color:"white",width:"100%"}}>Login</Button></Grid>
         </Grid>
 
        
@@ -212,7 +232,7 @@ return (
         <Alert onClose={handleAlertClose} severity="error">
         
          
-            { errors.userId!==""? errors.userId:errors.password}
+            { errors.msg}
         </Alert>
       </Snackbar>
     </form>

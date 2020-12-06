@@ -42,7 +42,12 @@ toolbar:theme.mixins.toolbar,
   formPaper:{
     padding:"2%"
   },
-
+radio:{
+color:"black",
+'&$checked': {
+  color:"black",
+}
+},
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
@@ -127,15 +132,19 @@ function handleOnChange(event)
 function handleMatchFind()
 {
 
-  // 
+  // axios.post
   var teams=[{
     teamName:"Barcelona",
+    sport:"Football",
+    captain:"sr4",
     teamLocation:{
       longitude:72.831757,
       latitude:19.116541
     }
   },{
     teamName:"Juventus",
+    sport:"Football",
+    captain:"cr7",
     teamLocation:{
       longitude:72.861076,
       latitude:19.112104
@@ -184,7 +193,7 @@ useEffect (()=>{
           <form>
       <FormControl style={{width:"100%"}} component="fieldset" className={classes.fields} >
       <FormLabel>Type of Sport </FormLabel>
-      <RadioGroup  name="type" value={radioVal} onChange={handleOnChangeRadio}>
+      <RadioGroup  className={classes.radio} name="type" value={radioVal} onChange={handleOnChangeRadio}>
         <Grid container>
           <Grid item xs={12} md={6}><FormControlLabel  color="default" value="team" control={<Radio />} label="Team" /></Grid>
           <Grid item xs={12} md={6}><FormControlLabel value="individual" control={<Radio />} label="Indivdual" />
@@ -287,12 +296,13 @@ useEffect (()=>{
   </Grid>
 </Grid>
 <Grid container>
-  <Grid item xs={12} md={6}>
+  <Grid item xs={12} md={10}>
 
   </Grid>
-  <Grid item xs={12} md={6}>
-  <Button className={classes.fields} variant="contained" style={{width:"30%",marginLeft:"50%"}} onClick={handleMatchFind}>
- <Typography>Find</Typography>
+  <Grid item xs={12} md={2}>
+  <Button className={classes.fields} variant="contained" style={{backgroundColor:"black",
+  color:"white"}} onClick={handleMatchFind}>
+ Find
 </Button>
   </Grid>
 </Grid>

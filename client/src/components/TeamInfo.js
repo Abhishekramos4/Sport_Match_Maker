@@ -4,22 +4,9 @@ import
   Card,CardActionArea,CardContent, 
   List,
   ListItem,
-    Divider, 
-    TextField, 
     Typography,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
     Dialog,
-    DialogActions,
-    DialogTitle,
-    DialogContentText,
-    DialogContent,
     Slide,
-    AppBar,
-    Toolbar,
-    IconButton,
   CircularProgress} from '@material-ui/core';
   import CloseIcon from '@material-ui/icons/Close'
 import {makeStyles,useTheme} from '@material-ui/core/styles'
@@ -27,6 +14,7 @@ import NavbarProfile from '../components/NavbarProfile';
 import TeamCard from  './TeamCard';
 import axios from 'axios';
 import SelectedTeam from './SelectedTeam';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,14 +48,10 @@ function TeamInfo()
     const classes=useStyles();
     const [hasTeam,setHasTeam] = useState(false) ;
     const [teamData,setTeamData]=useState([]);
-    const [searchForm,setSearchForm] = useState({
-        teamName:"",
-        sport:""
-
-    });
+    
 
 
-    const[dialogOpen,setDialogOpen]=useState(false);
+   
     const[isFetching,setIsFetching]=useState(true);
     const [openTeamDialog, setOpenTeamDialog] = useState(false);
     const [dialogData,setdialogData]=useState({
@@ -113,122 +97,13 @@ if(team.hasTeam==true){
    
     
 
-   function handleChangeSearchTeam(event)
-   { 
-    var name =event.target.name;
-    var value = event.target.value;
-     
-    setSearchForm((prevState)=>{
-        return ({...prevState,
-        [name]:value
-        });
-    });
-   }
+  
    
 
-     function handleSubmitTeamSearch()
-     {
-
-     
-         console.log(searchForm);
-        axios.post('http://localhost:5000/team-search',searchForm).then(
-            (res)=>{
-
-                console.log(res.data);
-              setDialogOpen(true);
-            }
-            
-        );
-        
-
-     }
-
-     function joinTeam()
-     {}
- 
     
 
-     const noTeam =(
-         <div>
-         <div>
-         <Typography variant="h5">
-                Join A Team
-            </Typography>
-        <form style={{padding:"3%"}}>
-         <TextField label="Team Name" variant="outlined" name="teamName" onChange={handleChangeSearchTeam}/>
-        <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel>Sport</InputLabel>
-        <Select
-          onChange={handleChangeSearchTeam}
-          name="sport"
-          label="Sport"
-         
-        >
-         
-          <MenuItem value="Football">Football</MenuItem>
-          <MenuItem value="Cricket">Cricket</MenuItem>
-          <MenuItem value="VolleyBall">Volleyball</MenuItem>
-        </Select>
-      </FormControl>
-      <div>
-            <Button onClick={handleSubmitTeamSearch} > Search</Button>
-            <Dialog
-        open={dialogOpen}
-        onClose={()=>{setDialogOpen(false)}}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Is this the Team?"}</DialogTitle>
-        
-        <DialogContent>
-        
-          <DialogContentText id="alert-dialog-description">
-         Real Madrid
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-         
-          <Button onClick={()=>{setDialogOpen(false)}} color="primary" autoFocus>
-           Cancel
-          </Button>
-          <Button onClick={joinTeam} color="primary">
-           Join
-          </Button>
-        </DialogActions>
-      </Dialog>
-</div>
-                    
-            </form>
-         </div>
-            
-         
-            <Divider />
-           
-            
-          <div>
-
-          </div>
-          <Typography variant="h5">
-               Create A Team
-            </Typography>
-            <form style={{padding:"3%"}}>
-                <TextField label="Team Name" variant="outlined"/>
-
-                
-            </form>
-
-         </div>
-     );
     
-// function TeamTable(props)
-// {
-//   return(
-//     <Typography variant="h6">TeamName:{props.teamData.teamName}</Typography>
     
-
-//   );
-
-// }
 
 
 
@@ -258,23 +133,29 @@ if(team.hasTeam==true){
            
           
          })
-         }
-         </List>
+        
+        }
+        </List>
          <Dialog fullScreen open={openTeamDialog} onClose={handleCloseDialog} TransitionComponent={Transition} >
        <SelectedTeam teamName={dialogData.teamName} players={dialogData.players} closeFunc={handleCloseDialog} />
          </Dialog>
         </div>
         
        
-         : noTeam
-        }
+         :
+         <div>
+           <Typography>You Have No Teams</Typography>
+           <Link><Typography>Click Here to Join a Team or Create New Team</Typography></Link>
         </div>
 
         }
        
-        
+        </div>
+        }
+      
       </main>
     </div>
+
 
        
         

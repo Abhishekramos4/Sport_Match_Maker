@@ -1,10 +1,11 @@
 import React,{useState,useEffect,useRef} from 'react';
+
 import mapboxgl from 'mapbox-gl';
 
-function GroundsMap(props)
+function GroundsMap({myLat,myLon,groundData})
 {
 
-console.log(props);
+console.log(groundData);
 
 const mapContainerStyle={
 
@@ -17,34 +18,46 @@ const mapContainerStyle={
 
 const [map, setMap] = useState(null);
 const mapContainer = useRef(null);
-const {myLat,myLon,groundData}=props;
+
+
+const[groundState,setGroundState]=useState([]);
 
 
 
+// useEffect(()=>{
+// console.log(groundState);
+// },[groundState])
 
-var groundPopups=[
 
-  
-];
 
-// console.log(groundData[0].name);
+// console.log(groundData[0]);
+
+var groundPopups=[];
 
 for(var i=0;i<groundData.length;i++)
 {
-groundPopups.push({
-  'type': 'Feature',
-  'properties': {
-  'description':
-  '<h5>'+groundData[i].name+'</h5>',
+if(groundData[i])
+{
+  console.log(groundData[i].name);
+  groundPopups.push(
+ 
+    {
+    'type': 'Feature',
+    'properties': {
+    'description':
+    '<h5>'+groundData[i].name+'</h5>',
+  
+  
+    'icon': 'theatre'
+    },
+    'geometry': {
+    'type': 'Point',
+    'coordinates': [ groundData[i].location.lon,groundData[i].location.lat]
+    }
+    });
 
+}
 
-  'icon': 'theatre'
-  },
-  'geometry': {
-  'type': 'Point',
-  'coordinates': [ groundData[i].location.lon,groundData[i].location.lat]
-  }
-  })
 
 }
 
@@ -67,6 +80,9 @@ useEffect(() => {
 .addTo(map);
 
 const marker = new mapboxgl.Marker().setLngLat([myLon,myLat]).setPopup(popup).addTo(map);
+if(groundData[0]){
+  var marker1 = new mapboxgl.Marker().setLngLat([groundData[0].location.lon,groundData[0].location.lat]).setPopup(popup).addTo(map);
+}
 
 
 map.on("load", () => {
@@ -76,7 +92,11 @@ map.on("load", () => {
         'type': 'geojson',
         'data': {
         'type': 'FeatureCollection',
-        'features': groundPopups
+        'features': [
+
+          
+        ]
+        
     }}
       );
 
@@ -122,7 +142,11 @@ map.on("load", () => {
   if (!map) initializeMap({ setMap, mapContainer });
 }, [map]);
 
-return <div ref={el => (mapContainer.current = el)} style={mapContainerStyle} />;
+return (
+<div><div ref={el => (mapContainer.current = el)} style={mapContainerStyle} />
+<h3>{groundData[0] ?groundData[0].location.lat:null}</h3>
+</div>
+);
 
 
 }

@@ -8,8 +8,9 @@ function Map(props)
 
         position: "absolute",
         
-        width: "400px",
-        height: "300px",
+        width: "522px",
+        height: "248px",
+        
 
     }
         

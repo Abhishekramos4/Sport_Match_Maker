@@ -2,11 +2,15 @@ import React,{useState,useEffect} from 'react';
 import {Menu,
     MenuItem,
     IconButton,
+    Divider
    } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 function Notification()
 {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [ requests,requestsState] = useState({
+
+  });
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -17,8 +21,23 @@ function Notification()
   
   useEffect(
         ()=>{
+            
+           //axios.post
+           var requests=[
+             {type:"individual",
+             sport:"chess",
+             userid:"ab123",
+             date:"",
+             time:""},
+            {
+              type:"team",
+              sport:"Football",
+              team:"Real Madrid",
+              date:"",
+              time:""
+            }
+            ];
 
-           //axios.post 
            
         
         }
@@ -40,7 +59,7 @@ function Notification()
       
         {
             <MenuItem>
-                Match Request
+              
             </MenuItem>
 
         }
