@@ -160,6 +160,13 @@ app.post("/login", async (req, res) => {
   session
     .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
     .then((result) => {
+      if(!result){
+        res.json({msg:"User not found"});
+        throw {
+          user : "not found",
+          status : 400,
+        };
+      }
       console.log(result.records[0].get(0));
       if (loginObj.password === result.records[0].get(0).properties.password) {
         const token = jwt.sign(
@@ -169,6 +176,7 @@ app.post("/login", async (req, res) => {
         res.json({ user: result.records[0].get(0).properties, token: token });
       } else {
         console.log("Invalid Credetials");
+        res.json({msg:"Password not found"});
         throw {
           password: "not found",
           status: 400,
@@ -183,6 +191,51 @@ app.post("/login", async (req, res) => {
       session.close();
     });
 });
+
+app.post("/get-interested-sports", async (req, res) => {
+  const userId = {
+    userId: req.body.userId,
+  };
+
+  var interestedSports;
+  try {
+    let session = driver.session();
+    interestedSports = await session.run(
+      "MATCH(u:User{userId: $userId}) RETURN u.interestedSports",
+      userId
+    );
+    await session.close();
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.json(interestedSports);
+});
+
+app.post("/set-interested-sports", async (req, res) => {
+  const data = {
+    userId: req.body.userId,
+    interestedSports: req.body.interestedSports
+  };
+
+  
+  try {
+    let session = driver.session();
+    interestedSports = await session.run(
+      "MATCH(u:User{userId: $userId}) SET u.interestedSports = $interestedSports RETURN u.interestedSports",
+      data
+    );
+    await session.close();
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.json(data.interestedSports);
+});
+
+
+
+
 
 app.post("/create-team", async (req, res) => {
   var teamInfo = {
@@ -256,22 +309,55 @@ app.post("/team-search", function (req, res) {
       });
   }
 
-//   var foundTeam = dummyTeams.find(
-//     (team) => team.teamName == teamName && team.sport == sport
-//   );
-//   if (foundTeam == null) {
-//     obj.msg = "No Team Found";
-//   } else {
-//     var i;
-//     for (i = 0; i < foundTeam.players.length; i++) {
-//       var playerinfo = dummyUsers.find(
-//         (user) => user.userId == foundTeam.players[i]
-//       );
-//       obj.players.push(playerinfo);
-//     }
-//     obj.msg = "Team Found";
-//   }
+  //   var foundTeam = dummyTeams.find(
+  //     (team) => team.teamName == teamName && team.sport == sport
+  //   );
+  //   if (foundTeam == null) {
+  //     obj.msg = "No Team Found";
+  //   } else {
+  //     var i;
+  //     for (i = 0; i < foundTeam.players.length; i++) {
+  //       var playerinfo = dummyUsers.find(
+  //         (user) => user.userId == foundTeam.players[i]
+  //       );
+  //       obj.players.push(playerinfo);
+  //     }
+  //     obj.msg = "Team Found";
+  //   }
   res.json(obj);
+});
+
+app.post('/get-nearby-grounds', async (req,res) =>{
+  let userLocation = {lat: req.body.latitude, long: req.body.longitude,}
+
+    let nearbyGrounds = [];
+    const session = driver.session();
+    try{
+        let result = await session.run('MATCH(t:Turf) RETURN t');
+
+        result.records.map(record => {
+            let groundLocation = record.get('Location');
+            var dist = getDistanceFromLatLonInKm(groundLocation.lil, groundLocation.lon, userLocation.lat, userLocation.long);
+            if(dist < 5){
+                nearbyGrounds.push({
+                    Name: record.get('Name'),
+                    Address: record.get("Address"),
+                    Contact: record.get('Contact'),
+                    Ratings: record.get('Ratings'),
+                    Location: {
+                        Latitude: record.get("lil"),
+                        Longitude: record.get("lon")
+                    }
+                });
+            }
+        });
+
+        await session.close();
+    }
+    catch(err) {
+        console.log(err);
+    }
+    res.json(nearbyGrounds);
 });
 
 app.get("/profile", auth, function (req, res) {

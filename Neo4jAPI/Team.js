@@ -5,7 +5,7 @@ const createTeam = function (teamObj) {
   const session = driver.session();
   session
     .run(
-      "CREATE (t: Team {name: $name, players: $players, captain: $captain, sports : $sports})",
+      "CREATE (t: Team {name: $name, players: $players, captain: $captain, sports : $sports, latitude: $latitude, longitude: $longitude}) RETURN t",
       teamObj
     )
     .then((result) => {
