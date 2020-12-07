@@ -149,13 +149,16 @@ function handleSubmit()
         console.log(loginForm);
         axios.post("http://localhost:5000/login",loginForm)
         .then(res=>{
-        console.log(res.data);
+
+            console.log(res);
+            
         
-        // props.handleUserToken(res.data.token);
-        // history.push('/profile');
         
+        props.handleUserToken(res.data.token);
+        history.push('/profile');
         
         }
+        
         
     
         

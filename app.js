@@ -135,6 +135,7 @@ app.post("/register", async (req, res) => {
     password: req.body.password,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
+    contact: req.body.contact
   };
 
   // dummyUsers.push(registerObj);
@@ -155,19 +156,23 @@ app.post("/login", async (req, res) => {
     password: req.body.password,
   };
 
+  var msg = {
+    msg: "Not found"
+  };
+
   const session = driver.session();
 
   session
     .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
     .then((result) => {
-      if(!result){
-        res.json({msg:"User not found"});
+      if(result == undefined){
+        res.json(msg);
         throw {
           user : "not found",
           status : 400,
         };
       }
-      console.log(result.records[0].get(0));
+      // console.log(result.records[0].get(0));
       if (loginObj.password === result.records[0].get(0).properties.password) {
         const token = jwt.sign(
           result.records[0].get(0).properties,
@@ -176,7 +181,7 @@ app.post("/login", async (req, res) => {
         res.json({ user: result.records[0].get(0).properties, token: token });
       } else {
         console.log("Invalid Credetials");
-        res.json({msg:"Password not found"});
+        res.json(msg);
         throw {
           password: "not found",
           status: 400,
