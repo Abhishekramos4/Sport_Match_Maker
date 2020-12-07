@@ -165,7 +165,7 @@ app.post("/login", async (req, res) => {
   session
     .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
     .then((result) => {
-      if (result.length <= 0) {
+      if (result.records.length <= 0) {
         res.json(msg);
         throw {
           user: "not found",
@@ -185,7 +185,7 @@ app.post("/login", async (req, res) => {
           console.log("Invalid Credetials");
           res.json(msg);
           throw {
-            password: "not found",
+            password: "not Found",
             status: 400,
           };
         }
