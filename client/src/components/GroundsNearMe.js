@@ -66,7 +66,7 @@ return (
 <NavbarProfile/>
 <main className={classes.content}>
 <div className={classes.toolbar} />
-<GroundsMap myLat={19.113646} myLon={72.869736} groundData={groundData}/>
+{/* <GroundsMap myLat={19.113646} myLon={72.869736} groundData={groundData}/> */}
 </main>
 </div>
 

@@ -38,6 +38,9 @@ const handleLogoutClose=()=>{
 }
 const handleLogoutfunction=()=>{
   localStorage.removeItem("userToken");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userFname");
+  localStorage.removeItem("userLname");
   history.push('/');
   setlogOutOpen(false);
 }

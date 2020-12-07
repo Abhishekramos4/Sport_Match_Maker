@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect ,useState} from 'react';
 import ProfileMenu from './ProfileMenu';
 import {Link} from 'react-router-dom';
 import {AppBar,CssBaseline,Divider,Drawer,Hidden,IconButton,List,ListItem,ListItemText,Typography,Toolbar,ListItemIcon} from '@material-ui/core';
@@ -61,11 +61,14 @@ backgroundColor:"black"},
 
   
 
-function NavbarProfile(props)
+function NavbarProfile()
 {
 
     // const { window } = props.window;
-    
+  const[name,setName]=useState({
+    fname:"",
+    lname:""
+  })
 
     const classes = useStyles();
     const theme = useTheme();
@@ -156,7 +159,7 @@ return (
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-          {props.fname +" "+ props.lname}
+         {localStorage.getItem("userFname") +" "+localStorage.getItem("userLname")}
           </Typography>
 
           <ProfileMenu />

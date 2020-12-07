@@ -186,7 +186,7 @@ app.post("/login", async (req, res) => {
           console.log("Invalid Credetials");
           res.json(msg);
           throw {
-            password: "not Found",
+            password: "not found",
             status: 400,
           };
         }
@@ -419,8 +419,9 @@ app.get("/get-nearby-grounds", async (req, res) => {
 app.get("/profile", auth, function (req, res) {
   console.log(req.headers);
   console.log(req.user);
+
   res.json({
-    userData: req.user.foundUser,
+    userData: req.user,
     msg: "This is your authorized profile",
   });
 });
