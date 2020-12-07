@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import NavbarProfile from './NavbarProfile';
 import axios from 'axios';
+import  MuiAlert from '@material-ui/lab/Alert';
 import 
 {Button,
     Grid,
@@ -19,6 +20,7 @@ import
     DialogTitle,
     DialogContentText,
     DialogContent,
+    Snackbar,
     Slide,
     AppBar,
     Toolbar,
@@ -35,7 +37,7 @@ const useStyles = makeStyles((theme)=>({
       },
       
       formPaper:{
-        margin:"5px",padding:"3%", width:"90%"
+        margin:"0 auto",padding:"3%", width:"90%"
     },
      // necessary for content to be below app bar
       toolbar:theme.mixins.toolbar,
@@ -56,6 +58,11 @@ function JoinTeam()
 {
     const classes=useStyles();
     const[dialogOpen,setDialogOpen]=useState(false);
+    const[createAlert,setCreateAlert]= useState(false);
+    const [joinAlert,setJoinAlert] = useState(false);
+    const [searchFailAlert,setSearchFailAlert]=useState(false);
+    const [DialogData,setDialogData] = useState();
+    
     const [searchForm,setSearchForm] = useState({
         teamName:"",
         sport:""
@@ -66,19 +73,50 @@ function JoinTeam()
         
             teamName:"",
             sport:"",
-            captain:"",
-            players:[]
+            latitude:19.113646,longitude:72.869736,
+            captain:"ab123",
+            players:["ab123"]
     
         }
      );
 
-    function join()
+    //TEAM CREATE
+
+    function handleChangeCreateTeam(event)
     {
-        axios.post(" ",createForm).then((res)=>{
-   
-        })
+
+      var name =event.target.name;
+     var value = event.target.value;
+      
+     setCreateForm((prevState)=>{
+         return ({...prevState,
+         [name]:value
+         });
+     });
 
     }
+
+    function handleSubmitCreateTeam()
+    {
+
+      console.log(createForm);  
+      axios.post("http://localhost:5000/create-team",createForm).then((res)=>{
+        console.log(res);
+        setCreateAlert(true);
+        });
+        
+        
+
+    }
+
+
+    // TEAM Search
+
+    function join()
+    {
+
+    }
+
     function handleSubmitTeamSearch()
     {
 
@@ -88,7 +126,14 @@ function JoinTeam()
            (res)=>{
 
                console.log(res.data);
-             setDialogOpen(true);
+               if(res.data.msg=="Found")
+               {
+                setDialogOpen(true);
+               }
+               else{
+                 setSearchFailAlert(true);
+               }
+             
            }
            
        );
@@ -108,7 +153,52 @@ function JoinTeam()
      });
     }
 
+
+    //ALERT CLOSE handles
+
+    function handleAlertCloseCreate(event,reason)
+    {
+        if (reason === "clickaway") {
+            return;
+          }
+      
+          setCreateAlert(false);
+    }
+    function handleAlertCloseJoin(event,reason)
+    {
+        if (reason === "clickaway") {
+            return;
+          }
+      
+          setJoinAlert(false);
+    }
+    function handleAlertCloseSearchFail(event,reason)
+    {
+
+      if (reason === "clickaway") {
+        return;
+      }
+  
+      setSearchFailAlert(false);
+
+    }
+
+function Alert(props) {
+      return <MuiAlert elevation={6} variant="filled" {...props} />;
+    }   
+
+function MyAlert({open,handleClose,severity,msg})
+{
+  return (<Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+    <Alert onClose={handleClose} severity={severity}>
     
+     
+        { msg}
+    </Alert>
+  </Snackbar>);
+}
+
+
 
 
   return (
@@ -123,11 +213,16 @@ function JoinTeam()
         {/* Left Side */}
         <Grid item xs={12} md={6}>
         <div>
-        <Typography variant="h5">
+        <Typography variant="h5" style={{marginBottom:"3%"}}>
            Join Team
        </Typography>
    <form >
-    <TextField label="Team Name" variant="outlined" name="teamName" onChange={handleChangeSearchTeam}/>
+
+   <Grid container style={{padding:"3%"}} spacing={2} alignItems="center">
+   <Grid md={12} item>
+   <TextField label="Team Name" variant="outlined" name="teamName" onChange={handleChangeSearchTeam} fullWidth autoComplete="off"/>
+   </Grid>
+   <Grid item md={12}>
    <FormControl variant="outlined" className={classes.formControl}>
    <InputLabel>Sport</InputLabel>
    <Select
@@ -142,8 +237,15 @@ function JoinTeam()
      <MenuItem value="VolleyBall">Volleyball</MenuItem>
    </Select>
  </FormControl>
+   </Grid>
+<Grid item md={12}>
+<Button onClick={handleSubmitTeamSearch} fullWidth style={{color:"white",backgroundColor:"black"}}> Search Team</Button>
+</Grid>
+   </Grid>
+    
+ 
  <div>
-       <Button onClick={handleSubmitTeamSearch} > Search</Button>
+      
        <Dialog
    open={dialogOpen}
    onClose={()=>{setDialogOpen(false)}}
@@ -182,13 +284,15 @@ function JoinTeam()
           Create Team
        </Typography>
        <form >
-       <Grid container spacing={2} alignItems="center" style={{padding:"2%"}}>
+       <Grid container spacing={2} alignItems="center" style={{padding:"3%"}}>
 
        <Grid item md={12}>
-       <TextField label="Team Name" 
+       <TextField label="Team Name"
+       name="teamName" 
        variant="outlined"
         fullWidth
         autoComplete="off"
+        onChange={handleChangeCreateTeam}
 
        />
        </Grid>
@@ -196,7 +300,7 @@ function JoinTeam()
     <FormControl variant="outlined" className={classes.formControl}>
    <InputLabel>Sport</InputLabel>
    <Select
-     onChange={handleChangeSearchTeam}
+     onChange={handleChangeCreateTeam}
      name="sport"
      label="Sport"
      fullWidth
@@ -212,7 +316,7 @@ function JoinTeam()
 
 
         <Grid item md={12}>
-          <Button fullWidth style={{backgroundColor:"black",color:"white"}}>Create Team</Button>
+          <Button onClick={handleSubmitCreateTeam} fullWidth style={{backgroundColor:"black",color:"white"}}>Create Team</Button>
         </Grid>
 
       
@@ -227,7 +331,9 @@ function JoinTeam()
         </Grid>
         
     </Paper>
-      
+    <MyAlert open={createAlert} severity="success"  msg="Team Successfully Created" handleClose={handleAlertCloseCreate}/>
+    <MyAlert open={joinAlert} severity="success"  msg="Team Successfully Joined" handleClose={handleAlertCloseJoin} />
+    <MyAlert open={searchFailAlert} severity="error"  msg="Team Search Failed" handleClose={handleAlertCloseSearchFail}/>      
 </main>
     </div>
 

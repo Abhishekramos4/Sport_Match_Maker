@@ -27,31 +27,39 @@ const [groundData,setGroundData]=useState([]);
 
     useEffect(()=>{
 
- //axios.post
-var arr=[{name: "Dream Sports Fields Pvt Ltd..",
-address: "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
-contact: "07947172083",
-ratings: "4.1",
-location: {
-    lat: 19.1251368,
-    lon: 72.841665
-},
-},
-{
-    name: "Get Set Play",
-    address: "Piramal Agastya Private Limited, Kamani-kurla West, Mumbai - 400070, Opposite Fire Brigade",
-   contact: "07947190450",
-    ratings: "5.0",
-   location: {
-        lat: 19.0867259,
-        lon: 72.8860501
-    }
-}
-];
- setGroundData(arr);
+
+ axios.get("http://localhost:5000/get-nearby-grounds",{
+     params:{
+        latitude:19.113646,longitude:72.869736,
+     }
+
+ }).then((res)=>{
+  console.log(res);
+ });
+// var arr=[{name: "Dream Sports Fields Pvt Ltd..",
+// address: "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
+// contact: "07947172083",
+// ratings: "4.1",
+// location: {
+//     lat: 19.1251368,
+//     lon: 72.841665
+// },
+// },
+// {
+//     name: "Get Set Play",
+//     address: "Piramal Agastya Private Limited, Kamani-kurla West, Mumbai - 400070, Opposite Fire Brigade",
+//    contact: "07947190450",
+//     ratings: "5.0",
+//    location: {
+//         lat: 19.0867259,
+//         lon: 72.8860501
+//     }
+// }
+// ];
+//  setGroundData(arr);
 
     },[]);
-console.log(groundData[0]);
+
 return (
 
 <div className={classes.root}>

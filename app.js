@@ -135,7 +135,7 @@ app.post("/register", async (req, res) => {
     password: req.body.password,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
-    contact: req.body.contact
+    contact: req.body.contact,
   };
 
   // dummyUsers.push(registerObj);
@@ -157,7 +157,7 @@ app.post("/login", async (req, res) => {
   };
 
   var msg = {
-    msg: "Not found"
+    msg: "Not found",
   };
 
   const session = driver.session();
@@ -165,28 +165,32 @@ app.post("/login", async (req, res) => {
   session
     .run("MATCH (u: User {userId:$userId}) RETURN u", loginObj)
     .then((result) => {
-      if(result == undefined){
+      if (result.length <= 0) {
         res.json(msg);
         throw {
-          user : "not found",
-          status : 400,
-        };
-      }
-      // console.log(result.records[0].get(0));
-      if (loginObj.password === result.records[0].get(0).properties.password) {
-        const token = jwt.sign(
-          result.records[0].get(0).properties,
-          process.env.SECRET_KEY
-        );
-        res.json({ user: result.records[0].get(0).properties, token: token });
-      } else {
-        console.log("Invalid Credetials");
-        res.json(msg);
-        throw {
-          password: "not found",
+          user: "not found",
           status: 400,
         };
+      } else {
+        console.log(result.records[0]);
+        if (
+          loginObj.password === result.records[0].get(0).properties.password
+        ) {
+          const token = jwt.sign(
+            result.records[0].get(0).properties,
+            process.env.SECRET_KEY
+          );
+          res.json({ user: result.records[0].get(0).properties, token: token });
+        } else {
+          console.log("Invalid Credetials");
+          res.json(msg);
+          throw {
+            password: "not found",
+            status: 400,
+          };
+        }
       }
+
       // return (response);
     })
     .catch((err) => {
@@ -220,10 +224,9 @@ app.post("/get-interested-sports", async (req, res) => {
 app.post("/set-interested-sports", async (req, res) => {
   const data = {
     userId: req.body.userId,
-    interestedSports: req.body.interestedSports
+    interestedSports: req.body.interestedSports,
   };
 
-  
   try {
     let session = driver.session();
     interestedSports = await session.run(
@@ -238,20 +241,48 @@ app.post("/set-interested-sports", async (req, res) => {
   res.json(data.interestedSports);
 });
 
-
-
-
+//Create team
 
 app.post("/create-team", async (req, res) => {
+  console.log(req.body);
   var teamInfo = {
-    name: req.body.name,
-    players: req.body.players,
+    name: req.body.teamName,
     captain: req.body.captain,
-    sports: req.body.sports,
+    sports: req.body.sport,
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
   };
+  var playersData = { name: req.body.teamName, players: req.body.players };
+  var captainData = { name: req.body.teamName, captain: req.body.captain };
 
-  await team.createTeam(teamInfo);
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(1), 1000);
+  })
+    .then(() => {
+      team.createTeam(teamInfo);
+    })
+    .then(() => {
+      team.createCaptain(captainData);
+    })
+    .then(() => {
+      team.createPlayers(playersData);
+    })
+    .then(() => {
+      res.json({ msg: "success" });
+    });
+
+  // team.combined(teamInfo,captainData,playersData).then(
+  //   ()=>{
+
+  //     res.json({msg:"success"});
+  //   }
+  // );
+
+  // console.log(createTeam,createCaptain,createPlayers);
+  //  res.json({msg:"success"});
 });
+
+//
 
 app.get("/team-info", function (req, res) {
   var user = dummyUsers[1];
@@ -279,39 +310,48 @@ app.post("/team-search", function (req, res) {
     sport: req.body.sport,
   };
 
-  var obj = { msg: "", team: [] };
-
   const session = driver.session();
 
-  if (teamName != null) {
+  if (teamSearchObj.teamName != null) {
     session
-      .run("MATCH(t:Team {name: $teamName})", teamSearchObj)
+      .run(
+        "MATCH(t:Team {name: $teamName,sports:$sport}) RETURN t",
+        teamSearchObj
+      )
       .then((result) => {
-        if (result != null) {
-          obj.team.push(result.records[0].get(0).properties);
-          obj.msg = "Team Found";
+        console.log(result.records.length);
+        if (result.records.length > 0) {
+          res.json({
+            team: result.records[0].get(0).properties,
+            msg: "Found",
+          });
         } else {
-          obj.msg = "Team Not Found";
+          res.json({
+            msg: "Not Found",
+          });
         }
+      })
+      .catch((err) => {
+        console.log(err);
       })
       .finally(() => {
         session.close();
       });
-  } else {
-    session
-      .run("MATCH(t:Team{sport: $sport})", teamSearchObj)
-      .then((result) => {
-        var teams = result.records[0].get(0).properties;
-        if (teams != null) {
-          obj.team = teams;
-          obj.msg = "Team Found";
-        } else {
-          obj.msg = "Team Not Found";
-        }
-      })
-      .finally(() => {
-        session.close();
-      });
+    // } else {
+    //   session
+    //     .run("MATCH(t:Team{sport: $sport})", teamSearchObj)
+    //     .then((result) => {
+    //       var teams = result.records[0].get(0).properties;
+    //       if (teams != null) {
+    //         obj.team = teams;
+    //         obj.msg = "Team Found";
+    //       } else {
+    //         obj.msg = "Team Not Found";
+    //       }
+    //     })
+    //     .finally(() => {
+    //       session.close();
+    //     });
   }
 
   //   var foundTeam = dummyTeams.find(
@@ -329,40 +369,42 @@ app.post("/team-search", function (req, res) {
   //     }
   //     obj.msg = "Team Found";
   //   }
-  res.json(obj);
 });
 
-app.post('/get-nearby-grounds', async (req,res) =>{
-  let userLocation = {lat: req.body.latitude, long: req.body.longitude,}
+app.get("/get-nearby-grounds", async (req, res) => {
+  let userLocation = {
+    lat: parseFloat(req.query.latitude),
+    long: parseFloat(req.query.longitude),
+  };
+  console.log(userLocation);
+  // let nearbyGrounds = [];
+  // const session = driver.session();
+  // try{
+  //     let result = await session.run('MATCH(t:Turf) RETURN t');
 
-    let nearbyGrounds = [];
-    const session = driver.session();
-    try{
-        let result = await session.run('MATCH(t:Turf) RETURN t');
+  //     result.records.map(record => {
+  //         let groundLocation = record.get('Location');
+  //         var dist = getDistanceFromLatLonInKm(groundLocation.lil, groundLocation.lon, userLocation.lat, userLocation.long);
+  //         if(dist < 5){
+  //             nearbyGrounds.push({
+  //                 Name: record.get('Name'),
+  //                 Address: record.get("Address"),
+  //                 Contact: record.get('Contact'),
+  //                 Ratings: record.get('Ratings'),
+  //                 Location: {
+  //                     Latitude: record.get("lil"),
+  //                     Longitude: record.get("lon")
+  //                 }
+  //             });
+  //         }
+  //     });
 
-        result.records.map(record => {
-            let groundLocation = record.get('Location');
-            var dist = getDistanceFromLatLonInKm(groundLocation.lil, groundLocation.lon, userLocation.lat, userLocation.long);
-            if(dist < 5){
-                nearbyGrounds.push({
-                    Name: record.get('Name'),
-                    Address: record.get("Address"),
-                    Contact: record.get('Contact'),
-                    Ratings: record.get('Ratings'),
-                    Location: {
-                        Latitude: record.get("lil"),
-                        Longitude: record.get("lon")
-                    }
-                });
-            }
-        });
-
-        await session.close();
-    }
-    catch(err) {
-        console.log(err);
-    }
-    res.json(nearbyGrounds);
+  //     await session.close();
+  // }
+  // catch(err) {
+  //     console.log(err);
+  // }
+  // res.json(nearbyGrounds);
 });
 
 app.get("/profile", auth, function (req, res) {

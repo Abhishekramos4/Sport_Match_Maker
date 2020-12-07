@@ -153,9 +153,9 @@ function handleSubmit()
             console.log(res);
             
         
-        
         props.handleUserToken(res.data.token);
         history.push('/profile');
+        
         
         }
         
