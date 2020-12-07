@@ -384,34 +384,36 @@ app.get("/get-nearby-grounds", async (req, res) => {
     long: parseFloat(req.query.longitude),
   };
   console.log(userLocation);
-  // let nearbyGrounds = [];
-  // const session = driver.session();
-  // try{
-  //     let result = await session.run('MATCH(t:Turf) RETURN t');
+  let nearbyGrounds = [];
+  const session = driver.session();
+  try{
+      let result = await session.run('MATCH(t:Turf) RETURN t');
 
-  //     result.records.map(record => {
-  //         let groundLocation = record.get('Location');
-  //         var dist = getDistanceFromLatLonInKm(groundLocation.lil, groundLocation.lon, userLocation.lat, userLocation.long);
-  //         if(dist < 5){
-  //             nearbyGrounds.push({
-  //                 Name: record.get('Name'),
-  //                 Address: record.get("Address"),
-  //                 Contact: record.get('Contact'),
-  //                 Ratings: record.get('Ratings'),
-  //                 Location: {
-  //                     Latitude: record.get("lil"),
-  //                     Longitude: record.get("lon")
-  //                 }
-  //             });
-  //         }
-  //     });
+      result.records.map(record => {
+          let groundLongitude = record.get(0).properties.longitude;
+          let groundLatitude = record.get(0).properties.latitude;
+          groundLongitude = parseFloat(groundLongitude);
+          groundLatitude = parseFloat(groundLatitude);
+          var dist = getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
+          if(dist < 5){
+              nearbyGrounds.push({
+                  Name: record.get(0).properties.name,
+                  Address: record.get(0).properties.address,
+                  Contact: record.get(0).properties.contact,
+                  Ratings: record.get(0).properties.ratings,
+                  Latitude: record.get(0).properties.latitude,
+                  Longitude: record.get(0).properties.longitude
+                  
+              });
+          }
+      });
 
-  //     await session.close();
-  // }
-  // catch(err) {
-  //     console.log(err);
-  // }
-  // res.json(nearbyGrounds);
+      await session.close();
+  }
+  catch(err) {
+      console.log(err);
+  }
+  res.json(nearbyGrounds);
 });
 
 app.get("/profile", auth, function (req, res) {

@@ -71,5 +71,6 @@ const addGround = function () {
 
 
 module.exports.addGround = addGround;
+module.exports.getDistanceFromLatLonInKm = getDistanceFromLatLonInKm;
 
 
