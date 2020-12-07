@@ -171,17 +171,24 @@ useEffect (()=>{
       Authorization : `Bearer ${token}`
   }})
     .then ((res)=>{
-      console.log(res.data.userData);
-     setUserData({... res.data.userData})
-
+     
+      console.log(res.data.userData);      
+        localStorage.setItem("userId",res.data.userId);
+        localStorage.setItem("userFname",res.data.fname);
+        localStorage.setItem("userLname",res.data.lname);
+        
     }).catch(err=>{console.log(err);});
 
     },[]
 );
 
+useEffect(()=>{
+  console.log(userData);
+
+},[userData]);
 
   const classes = useStyles();
-    const theme = useTheme();
+  
   return (
     <div className={classes.root}>
       <NavbarProfile fname={userData.fname} lname={userData.lname}/>

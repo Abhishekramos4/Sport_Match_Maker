@@ -97,6 +97,7 @@ function Login(props)
         );
 
         const[openAlert,setOpenAlert]=useState(false);
+        const[openAlertInvalid,setOpenAlertInvalid] = useState(false);
         
 
 
@@ -108,6 +109,15 @@ function Login(props)
               }
           
               setOpenAlert(false);
+        }
+
+        function handleAlertCloseInvalid(event,reason)
+        {
+            if (reason === "clickaway") {
+                return;
+              }
+          
+              setOpenAlertInvalid(false);
         }
     
         function isValid()
@@ -151,10 +161,20 @@ function handleSubmit()
         .then(res=>{
 
             console.log(res);
+            if(res.data.msg=="Not found")
+            {
+                setOpenAlertInvalid(true);
+            }
+            else{
+
             
-        
+
         props.handleUserToken(res.data.token);
         history.push('/profile');
+            
+    }
+        
+        
         
         
         }
@@ -233,9 +253,12 @@ return (
        
         <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleAlertClose}>
         <Alert onClose={handleAlertClose} severity="error">
-        
-         
-            { errors.msg}
+         { errors.msg}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={openAlertInvalid} autoHideDuration={6000} onClose={handleAlertCloseInvalid}>
+        <Alert onClose={handleAlertCloseInvalid} severity="error">
+         { "Invalid Credentials.Please Try Again"}
         </Alert>
       </Snackbar>
     </form>

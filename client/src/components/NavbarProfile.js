@@ -61,11 +61,12 @@ backgroundColor:"black"},
 
   
 
-function NavbarProfile(props)
+function NavbarProfile()
 {
 
     // const { window } = props.window;
     
+  
 
     const classes = useStyles();
     const theme = useTheme();
@@ -156,7 +157,7 @@ return (
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-          {props.fname +" "+ props.lname}
+         
           </Typography>
 
           <ProfileMenu />

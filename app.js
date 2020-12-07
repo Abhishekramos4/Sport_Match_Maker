@@ -185,7 +185,7 @@ app.post("/login", async (req, res) => {
           console.log("Invalid Credetials");
           res.json(msg);
           throw {
-            password: "not Found",
+            password: "not found",
             status: 400,
           };
         }
