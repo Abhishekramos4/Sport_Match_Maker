@@ -9,12 +9,13 @@ const user = require("./Neo4jAPI/User");
 const auth = require("./auth");
 const driver = require("./Neo4jAPI/config");
 const team = require("./Neo4jAPI/Team");
+const ground = require("./Neo4jAPI/Ground");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/", function (req, res) {
+app.get("/", async (req, res) => {
   res.send("Server is running on port 5000");
 });
 
@@ -193,6 +194,12 @@ app.post("/login", async (req, res) => {
 
       // return (response);
     })
+    .then(() => {
+      ground.addGround();
+    })
+    .then((res) => {
+      console.log(res);
+    })
     .catch((err) => {
       console.log(err);
     })
@@ -285,9 +292,6 @@ app.post("/create-team", async (req, res) => {
 //
 
 app.get("/team-info", function (req, res) {
-  
-  
-  
   var user = dummyUsers[1];
   var obj = {
     hasTeam: false,

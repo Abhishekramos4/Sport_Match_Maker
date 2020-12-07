@@ -23,7 +23,7 @@ const createCaptain= async  (captainData) => {
   const session = driver.session();
   session
     .run(
-      "MATCH(n:User{userId:$captain}) MATCH(t:Team{name:$name}) MERGE(n)-[v:IS_CAPTAIN_OF]->(t) RETURN v",
+      "MATCH(n:User{userId:$captain}) MERGE(t:Team{name:$name}) MERGE (n)-[v:IS_CAPTAIN_OF]->(t) RETURN type(v)",
       captainData
     )
     .then((result) => {
@@ -47,7 +47,7 @@ const createPlayers = async  (playersData) => {
     session=driver.session();
     session
     .run(
-      "MATCH(n:User{userId:$id}) MATCH(t:Team{name:$name}) MERGE(n)-[r:IS_PLAYER_OF]->(t) RETURN r",
+      "MATCH(n:User{userId:$id}) MERGE(t:Team{name:$name}) MERGE (n)-[r:IS_PLAYER_OF]->(t) RETURN type(r)",
       {
         id:id,
         name:team
