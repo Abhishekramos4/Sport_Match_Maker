@@ -93,8 +93,24 @@ map.on("load", () => {
         'data': {
         'type': 'FeatureCollection',
         'features': [
-
+        groundData[0]?
+        {
+          'type': 'Feature',
+          'properties': {
+          'description':
+          '<h5>'+groundData[i].name+'</h5>',
+        
+        
+          'icon': 'theatre'
+          },
+          'geometry': {
+          'type': 'Point',
+          'coordinates': [ groundData[i].location.lon,groundData[i].location.lat]
+          }
+          }
+        :null
           
+
         ]
         
     }}

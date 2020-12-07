@@ -37,11 +37,16 @@ const useStyles=makeStyles((theme)=>({
       },
     },
     card:{
-        padding:"2%"
+        padding:"2%",
+        height:"200px"
       
     },
     icon:{
         fontSize:40
+    },
+    iconContainer:{
+        textAlign:"center",
+        marginBottom:"5%"
     }
 }))
 
@@ -64,12 +69,12 @@ const classes=useStyles();
     <Grid container>
     <Grid item  xs={12} sm={12} md={4}>
    
-   <Card className={classes.card}>
+   <Card variant="outlined" square="true" className={classes.card}>
        <CardContent>
-       <div>
+       <div className={classes.iconContainer}>
            <GroupIcon className={classes.icon}/>
        </div>
-       <Typography>Join A team Or Create Your Team !</Typography>
+       <Typography align="center" variant="h6">Join A team Or Create Your Team !</Typography>
        </CardContent>
    </Card>
   
@@ -77,24 +82,24 @@ const classes=useStyles();
     
     </Grid>
     <Grid item xs={12} sm={12} md={4}>
-    <Card className={classes.card}>
+    <Card variant="outlined" square="true" className={classes.card}>
     <CardContent>
-    <div>
-        <SearchIcon className={classes.icon}/>
+    <div className={classes.iconContainer}>
+        <SearchIcon className={classes.icon} />
     </div>
-    <Typography >Find Interested Teams Near You !</Typography>
+    <Typography align="center" variant="h6">Find Interested Teams Near You !</Typography>
     </CardContent>
     
     </Card>
    
  </Grid>
  <Grid item xs={12} sm={12} md={4}>
- <Card className={classes.card}>
+ <Card variant="outlined" square="true" className={classes.card}>
     <CardContent>
-    <div >
+    <div className={classes.iconContainer}>
        <SportsHandballIcon className={classes.icon}/>
     </div>
-    <Typography>Play Your Favorite Sport </Typography>
+    <Typography align="center" variant="h6">Play Your Favorite Sport </Typography>
     </CardContent>
     
     </Card>
