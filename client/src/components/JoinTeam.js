@@ -1,5 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import NavbarProfile from './NavbarProfile';
+import bgImg from '../images/img6.jpg';
 import axios from 'axios';
 import  MuiAlert from '@material-ui/lab/Alert';
 import 
@@ -61,7 +62,7 @@ function JoinTeam()
     const[createAlert,setCreateAlert]= useState(false);
     const [joinAlert,setJoinAlert] = useState(false);
     const [searchFailAlert,setSearchFailAlert]=useState(false);
-    const [DialogData,setDialogData] = useState();
+    const [DialogData,setDialogData] = useState({teamName:"",sport:"",captain:""});
     
     const [searchForm,setSearchForm] = useState({
         teamName:"",
@@ -125,9 +126,16 @@ function JoinTeam()
        axios.post('http://localhost:5000/team-search',searchForm).then(
            (res)=>{
 
-               console.log(res.data);
+               console.log(res.data.team);
                if(res.data.msg=="Found")
                {
+                setDialogData(
+                  {
+                    teamName:res.data.team.name,
+                    sport:res.data.team.sport,
+                    captain:res.data.team.captain
+                  }
+                );
                 setDialogOpen(true);
                }
                else{
@@ -209,6 +217,9 @@ function MyAlert({open,handleClose,severity,msg})
     
 
     <Paper className={classes.formPaper}>
+    {/* <div style={{ height:"150px",width:"1000px"}}>
+    <img src={bgImg}/>
+</div> */}
         <Grid container spacing={2} >
         {/* Left Side */}
         <Grid item xs={12} md={6}>
@@ -257,7 +268,7 @@ function MyAlert({open,handleClose,severity,msg})
    <DialogContent>
    
      <DialogContentText id="alert-dialog-description">
-    Real Madrid
+   Team Name: {DialogData.teamName} Sport: {DialogData.sport} Captain: {DialogData.captain}  
      </DialogContentText>
    </DialogContent>
    <DialogActions>

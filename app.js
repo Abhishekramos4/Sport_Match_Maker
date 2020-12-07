@@ -281,6 +281,9 @@ app.post("/create-team", async (req, res) => {
 //
 
 app.get("/team-info", function (req, res) {
+  
+  
+  
   var user = dummyUsers[1];
   var obj = {
     hasTeam: false,

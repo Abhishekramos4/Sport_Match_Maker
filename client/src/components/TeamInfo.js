@@ -72,23 +72,33 @@ const handleCloseDialog = () => {
   
 };
 
-const fetchTeam = async () =>{
-const apiCall= await fetch('http://localhost:5000/team-info');
-const team =await apiCall.json();
-console.log(team);
-setTeamData(team.teams);
-setIsFetching(false);
-if(team.hasTeam==true){
-  setHasTeam(true);
-}
+// const fetchTeam = async () =>{
+// const apiCall= await fetch('http://localhost:5000/team-info');
+// const team =await apiCall.json();
+// console.log(team);
+// setTeamData(team.teams);
+// setIsFetching(false);
+// if(team.hasTeam==true){
+//   setHasTeam(true);
+// }
 
-}
+// }
 
     useEffect(
       
         ()=>{
           
-          fetchTeam();
+          axios.get("http://localhost:5000/team-info",{
+            params:{
+              userId:"ab123"
+            }
+          }).then((res)=>{
+            console.log(res.data);
+            
+          })
+
+
+
          } ,[]
      );
 
@@ -114,7 +124,7 @@ if(team.hasTeam==true){
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {
-          isFetching ?<div><CircularProgress /></div> :
+          isFetching ?<div style={{textAlign:"center",marginTop:"300px"}}><CircularProgress style={{color:"black"}} /></div> :
           <div>
         { hasTeam ?
         <div>
