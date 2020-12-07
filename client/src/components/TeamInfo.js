@@ -12,6 +12,7 @@ import
 import {makeStyles,useTheme} from '@material-ui/core/styles'
 import NavbarProfile from '../components/NavbarProfile';
 import TeamCard from  './TeamCard';
+import Loading from './Loading';
 import axios from 'axios';
 import SelectedTeam from './SelectedTeam';
 import { Link } from 'react-router-dom';
@@ -124,7 +125,7 @@ const handleCloseDialog = () => {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {
-          isFetching ?<div style={{textAlign:"center",marginTop:"300px"}}><CircularProgress style={{color:"black"}} /></div> :
+          isFetching ?<Loading/> :
           <div>
         { hasTeam ?
         <div>

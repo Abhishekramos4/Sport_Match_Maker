@@ -25,6 +25,7 @@ DialogActions,
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import axios from 'axios';
+import Loading from './Loading';
 
 
 
@@ -61,6 +62,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 function Profile() {
 
 const [isIndividual,setIsIndividual]=useState(false);
+const[fetching,setIsFetched] = useState(true);
 const[radioVal,setRadioVal]=useState("team");
 const[userData,setUserData ]=useState({});
 const[matchForm,setMatchForm]=useState({
@@ -172,24 +174,25 @@ useEffect (()=>{
   }})
     .then ((res)=>{
      
-      console.log(res.data.userData);      
-        localStorage.setItem("userId",res.data.userId);
-        localStorage.setItem("userFname",res.data.fname);
-        localStorage.setItem("userLname",res.data.lname);
+      console.log(res.data);      
+        localStorage.setItem("userId",res.data.userData.userId);
+        localStorage.setItem("userFname",res.data.userData.fname);
+        localStorage.setItem("userLname",res.data.userData.lname);
         
-    }).catch(err=>{console.log(err);});
+    }).catch(err=>{console.log(err);}).then(()=>{
+        setIsFetched(false);
+    });
 
     },[]
 );
 
-useEffect(()=>{
-  console.log(userData);
 
-},[userData]);
 
   const classes = useStyles();
   
   return (
+   <div>
+    { fetching? <Loading/>:
     <div className={classes.root}>
       <NavbarProfile fname={userData.fname} lname={userData.lname}/>
       <main className={classes.content}>
@@ -325,7 +328,11 @@ useEffect(()=>{
 
       </main>
     </div>
+    }
+    </div>
   );
+
+    
 }
 
 

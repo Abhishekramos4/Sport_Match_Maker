@@ -394,7 +394,7 @@ app.get("/get-nearby-grounds", async (req, res) => {
           let groundLatitude = record.get(0).properties.latitude;
           groundLongitude = parseFloat(groundLongitude);
           groundLatitude = parseFloat(groundLatitude);
-          var dist = getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
+          var dist = ground.getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
           if(dist < 5){
               nearbyGrounds.push({
                   Name: record.get(0).properties.name,
@@ -419,8 +419,9 @@ app.get("/get-nearby-grounds", async (req, res) => {
 app.get("/profile", auth, function (req, res) {
   console.log(req.headers);
   console.log(req.user);
+
   res.json({
-    userData: req.user.foundUser,
+    userData: req.user,
     msg: "This is your authorized profile",
   });
 });
