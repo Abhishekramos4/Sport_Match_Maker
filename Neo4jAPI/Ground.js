@@ -24,8 +24,8 @@ function deg2rad(deg) {
 const pathName = path.join(__dirname, "turf_data.json");
 
 
-const addGround = async () => {
-  fs.readFile(pathName, (err, data) => {
+const addGround = function () {
+  fs.readFile(pathName, async (err, data) => {
     if (err) {
       console.log(err);
     }
@@ -40,12 +40,22 @@ const addGround = async () => {
         
     const turfData = JSON.parse(data);
     for (let index = 0; index < turfData.length; index++) {
-      const d = turfData[index];
+      const d = {
+        Name: turfData[index].Name,
+        Address: turfData[index].Address,
+        Contact: turfData[index].Contact,
+        Ratings: turfData[index].Ratings,
+        Latitude:
+          turfData[index].Location == null ? "" : turfData[index].Location.lil,
+        Longitude:
+          turfData[index].Location == null ? "" : turfData[index].Location.lon,
+      };
+      console.log(d);
       let session = driver.session();
 
       try {
         await session.run(
-          "CREATE(t:Turf{name:$Name, address:$Address, contact:$Contact, ratings:$Ratings, location: $Location}) RETURN t",
+          "CREATE(t:Turf{name:$Name, address:$Address, contact:$Contact, ratings:$Ratings, latitude: $Latitude, longitude: $Longitude}) RETURN t",
           d
         );
 
@@ -60,6 +70,7 @@ const addGround = async () => {
 
 
 
-module.exports = addGround;
+module.exports.addGround = addGround;
+module.exports.getDistanceFromLatLonInKm = getDistanceFromLatLonInKm;
 
 
