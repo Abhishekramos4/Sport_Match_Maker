@@ -357,7 +357,7 @@ app.get("/get-nearby-grounds", async (req, res) => {
           groundLongitude = parseFloat(groundLongitude);
           groundLatitude = parseFloat(groundLatitude);
           var dist = ground.getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
-          if(dist < 2){
+          if(dist < 4){
               nearbyGrounds.push({
                   Name: record.get(0).properties.name,
                   Address: record.get(0).properties.address,
@@ -463,18 +463,63 @@ const session = driver.session();
 
 //MY-TEAMS
 
-app.get("/my-teams-search",function(req,res)
+app.get("/captain-teams-search",function(req,res)
 {
 
   var obj={
     userId:req.query.userId,
-    sports:req.query.sport
   }
 
 const session = driver.session();
-session.run('').then((result)=>{
-  console.log(result);
-  
+session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',obj).then((result)=>{
+  if(result.records.length<=0)
+  {
+    res.json({
+      isCaptain:false
+    });
+  }
+  else{
+    
+     var FootArr=[];
+     var CrickArr=[];
+     var VollArr=[];
+     for(let i=0;i<result.records.length;i++)
+     {
+      console.log(result.records[i].get(0).properties);
+       if(result.records[i].get(0).properties.sports=="Football")
+       {FootArr.push(result.records[i].get(0).properties.name);}
+       else if(result.records[i].get(0).properties.sports=="Cricket")
+       {
+         CrickArr.push(result.records[i].get(0).properties.name);
+       }
+       else if(result.records[i].get(0).properties.sports=="Volleyball")
+       {
+        VollArr.push(result.records[i].get(0).properties.name);
+      }
+
+     
+
+     }
+
+
+
+      res.json(
+        {
+          isCaptain:true,
+          Football:FootArr,
+          Cricket:CrickArr,
+          VolleyBall:VollArr
+
+        }
+      );
+    
+  }
+
+})
+.catch((err)=>{
+  console.log(err);
+}).finally(()=>{
+  session.close();
 })
 
 

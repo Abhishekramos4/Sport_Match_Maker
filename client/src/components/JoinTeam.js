@@ -76,9 +76,9 @@ function JoinTeam()
         
             teamName:"",
             sport:"",
-            latitude:19.113646,longitude:72.869736,
-            captain:"ab123",
-            players:["ab123"]
+            latitude:localStorage.getItem("userLat"),
+            longitude:localStorage.getItem("userLong"),
+            captain:localStorage.getItem("userId"),
     
         }
      );

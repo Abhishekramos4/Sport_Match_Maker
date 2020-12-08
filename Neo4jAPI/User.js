@@ -10,7 +10,7 @@ const createUser = async (obj) => {
 
   session
     .run(
-      "CREATE (a:User {userId:$userId,fname:$fname,lname:$lname,email:$email,password:$password, contact: $contact}) RETURN a",
+      "CREATE (a:User {userId:$userId,fname:$fname,lname:$lname,email:$email,latitude:$latitude,longitude:$longitude,password:$password, contact: $contact}) RETURN a",
       obj
     )
     .then((result) => {

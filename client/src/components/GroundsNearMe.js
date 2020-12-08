@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import NavbarProfile from './NavbarProfile'
 import {makeStyles} from '@material-ui/core/styles'
+import {Paper, Typography} from '@material-ui/core';
 import axios from 'axios';
 import GroundsMapHolder from './GroundsMapHolder';
 
@@ -30,7 +31,7 @@ const [groundData,setGroundData]=useState([]);
 
  axios.get("http://localhost:5000/get-nearby-grounds",{
      params:{
-        latitude:19.113646,longitude:72.869736,
+        latitude:localStorage.getItem("userLat"),longitude:localStorage.getItem("userLong"),
      }
   
  }).then((res)=>{
@@ -40,26 +41,6 @@ const [groundData,setGroundData]=useState([]);
 
     },[]);
 
-    // useEffect(()=>{
-    // console.log(groundData);
-    // var arr=[
-    //   {
-    //         'type': 'Feature',
-    //         'properties': {
-    //         'description':
-    //         '<h5>'+groundData[0].Name+'</h5>',
-          
-          
-    //         'icon': 'theatre'
-    //         },
-    //         'geometry': {
-    //         'type': 'Point',
-    //         'coordinates': [ groundData[0].Longitude,groundData[0].location.Latitude]
-    //         }
-            
-    //   }]
-    // },[groundData]);
-
   
 
 return (
@@ -68,7 +49,11 @@ return (
 <NavbarProfile/>
 <main className={classes.content}>
 <div className={classes.toolbar} />
+<Paper style={{padding:"2%"}}>
+<Typography align="center" variant="h5" style={{marginBottom:"2%"}}>GROUNDS NEAR ME</Typography>
 <GroundsMapHolder groundData={groundData}/>
+</Paper>
+
 </main>
 </div>
 

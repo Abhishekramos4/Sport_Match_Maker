@@ -20,9 +20,6 @@ const [map, setMap] = useState(null);
 const mapContainer = useRef(null);
 const {myLat,myLon,groundData}=props;
 
-// const[isLoading,setIsLoading]=useState(true);
-// const[groundState,setGroundState]=useState([]);
-
 
 var groundPopups=[];
 
@@ -33,8 +30,12 @@ for(var i=0;i<groundData.length;i++)
       'type': 'Feature',
       'properties': {
       'description':
-      '<h5>'+groundData[i].Name+'</h5>',
-      'icon': 'theatre'
+      '<h6>'+groundData[i].Name+'</h6>'+
+      '<p><b>Address: </b>'+groundData[i].Address+'</p>'
+      +'<p><b>Contact No : </b>'+groundData[i].Contact+'</p>'
+      +'<p><b>Rating: </b>'+groundData[i].Ratings+'/5 </p>'
+      
+
       },
       'geometry': {
       'type': 'Point',
@@ -44,15 +45,6 @@ for(var i=0;i<groundData.length;i++)
 
    }
 
-
-
-
-
-
-
-   setTimeout(()=>{
-
-   },1000);
 
 useEffect(() => {
   mapboxgl.accessToken = 'pk.eyJ1IjoiaGF6YXJkcmFtb3M0NyIsImEiOiJja2dvMGVlaHEwY2dxMzdtc3lxZzF5Y3FlIn0.gt8y3LtnteaKOIuj-IXs6w';
@@ -74,27 +66,35 @@ const marker = new mapboxgl.Marker().setLngLat([myLon,myLat]).setPopup(popup).ad
 console.log(marker);
  map.on("load", () => {
       
-  
-    map.addSource('places', {
-      'type': 'geojson',
-      'data': {
-      'type': 'FeatureCollection',
-      'features': groundPopups
-      
-  }}
-    );
-
-    console.log(groundPopups);
-
-    map.addLayer({
+  map.loadImage(
+    'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+    function (error, image) {
+      if (error) throw error;
+      map.addImage('custom-marker', image);
+       
+      map.addSource('places', {
+        'type': 'geojson',
+        'data': {
+        'type': 'FeatureCollection',
+        'features': groundPopups
+        
+    }}
+      );
+      // Add a layer showing the places.
+      map.addLayer({
       'id': 'places',
       'type': 'symbol',
       'source': 'places',
       'layout': {
-      'icon-image': '{icon}-15',
+      'icon-image': 'custom-marker',
       'icon-allow-overlap': true
       }
       });
+      });
+
+    
+
+    
 
       map.on('click', 'places', function (e) {
         var coordinates = e.features[0].geometry.coordinates.slice();

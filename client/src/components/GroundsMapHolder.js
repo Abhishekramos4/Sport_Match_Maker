@@ -6,7 +6,7 @@
  {
      const{groundData}= props;
 
-    return(<div><GroundsMap myLat={19.113646} myLon={72.869736} groundData={groundData}/></div>);
+    return(<div><GroundsMap myLat={localStorage.getItem("userLat")} myLon={localStorage.getItem("userLong")} groundData={groundData}/></div>);
 
 
  }

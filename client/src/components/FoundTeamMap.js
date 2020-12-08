@@ -43,7 +43,7 @@ function Map(props)
 
    }
 
-   console.log(teamPopups);
+  //  console.log(teamPopups);
 
 
 
@@ -64,7 +64,7 @@ function Map(props)
 
 const marker = new mapboxgl.Marker().setLngLat([longitude,latitude]).setPopup(popup).addTo(map);
 
- console.log(teamPopups);
+//  console.log(teamPopups);
 map.on("load", () => {
           
       

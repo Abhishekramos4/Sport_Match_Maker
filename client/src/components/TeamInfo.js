@@ -73,18 +73,6 @@ const handleCloseDialog = () => {
   
 };
 
-// const fetchTeam = async () =>{
-// const apiCall= await fetch('http://localhost:5000/team-info');
-// const team =await apiCall.json();
-// console.log(team);
-// setTeamData(team.teams);
-// setIsFetching(false);
-// if(team.hasTeam==true){
-//   setHasTeam(true);
-// }
-
-// }
-
     useEffect(
       
         ()=>{
