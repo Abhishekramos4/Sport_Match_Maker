@@ -95,6 +95,18 @@ const handleCloseDialog = () => {
             }
           }).then((res)=>{
             console.log(res.data);
+            setIsFetching(false);
+            if(res.data.hasTeam===false)
+            {
+              setHasTeam(false);
+            }
+            else{
+
+              setHasTeam(true);
+              setTeamData(res.data.teams);
+            }
+            
+
             
           })
 
@@ -135,7 +147,8 @@ const handleCloseDialog = () => {
            return(
             
              <ListItem key={index}>
-              <TeamCard teamName={team.teamName} sport={team.sport} players={team.players} openFunc={handleClickOpenDialog}/>
+              <TeamCard teamName={team.name} sport={team.sports}  openFunc={handleClickOpenDialog}/>
+              {/* <Typography>{team.name}</Typography> */}
              </ListItem>
          
             
@@ -156,7 +169,7 @@ const handleCloseDialog = () => {
          :
          <div>
            <Typography>You Have No Teams</Typography>
-           <Link><Typography>Click Here to Join a Team or Create New Team</Typography></Link>
+           <Link to="/join-team"><Typography>Click Here to Join a Team or Create New Team</Typography></Link>
         </div>
 
         }
