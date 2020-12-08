@@ -208,9 +208,9 @@ app.post("/login", async (req, res) => {
     });
 });
 
-app.post("/get-interested-sports", async (req, res) => {
+app.get("/get-interested-sports", async (req, res) => {
   const userId = {
-    userId: req.body.userId,
+    userId: req.query.userId,
   };
 
   var interestedSports;
@@ -228,10 +228,10 @@ app.post("/get-interested-sports", async (req, res) => {
   res.json(interestedSports);
 });
 
-app.post("/set-interested-sports", async (req, res) => {
+app.get("/set-interested-sports", async (req, res) => {
   const data = {
-    userId: req.body.userId,
-    interestedSports: req.body.interestedSports,
+    userId: req.query.userId,
+    interestedSports: req.query.interestedSports,
   };
 
   try {
