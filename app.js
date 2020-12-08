@@ -10,6 +10,8 @@ const auth = require("./auth");
 const driver = require("./Neo4jAPI/config");
 const team = require("./Neo4jAPI/Team");
 const ground = require("./Neo4jAPI/Ground");
+const utils = require("./Neo4jAPI/utils/distance_utils");
+const { DateTime } = require("neo4j-driver");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -173,7 +175,6 @@ app.post("/login", async (req, res) => {
           status: 400,
         };
       } else {
-        
         if (
           loginObj.password === result.records[0].get(0).properties.password
         ) {
@@ -201,6 +202,9 @@ app.post("/login", async (req, res) => {
     .then((res) => {
       console.log(res);
     })
+    .then(() => {
+      utils.setSports();
+    })
     .catch((err) => {
       console.log(err);
     })
@@ -209,16 +213,16 @@ app.post("/login", async (req, res) => {
     });
 });
 
-app.post("/get-interested-sports", async (req, res) => {
+app.get("/get-interested-sports", async (req, res) => {
   const userId = {
-    userId: req.body.userId,
+    userId: req.query.userId,
   };
 
-  var interestedSports;
+  let interestedSports;
   try {
     let session = driver.session();
     interestedSports = await session.run(
-      "MATCH(u:User{userId: $userId}) RETURN u.interestedSports",
+      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]-> (s:Sport) RETURN s",
       userId
     );
     await session.close();
@@ -226,19 +230,19 @@ app.post("/get-interested-sports", async (req, res) => {
     console.log(err);
   }
 
-  res.json(interestedSports);
+  res.json(interestedSports.records[0].get(0).properties);
 });
 
-app.post("/set-interested-sports", async (req, res) => {
+app.get("/set-interested-sports", async (req, res) => {
   const data = {
-    userId: req.body.userId,
-    interestedSports: req.body.interestedSports,
+    userId: req.query.userId,
+    interestedSports: req.query.interestedSports,
   };
 
   try {
     let session = driver.session();
     interestedSports = await session.run(
-      "MATCH(u:User{userId: $userId}) SET u.interestedSports = $interestedSports RETURN u.interestedSports",
+      "MERGE(u:User{userId:$userId}) MERGE(s:Sport{name:$interestedSport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
       data
     );
     await session.close();
@@ -260,18 +264,18 @@ app.post("/create-team", async (req, res) => {
     latitude: req.body.latitude,
     longitude: req.body.longitude,
   };
-  
 
-  team.createTeam(teamInfo).then((result)=>{
-    res.json({msg:"success"})
-  }).catch(err=>{console.log(err)});
-
-  
+  team
+    .createTeam(teamInfo)
+    .then((result) => {
+      res.json({ msg: "success" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 //
-
-
 
 app.post("/team-search", function (req, res) {
   var teamSearchObj = {
@@ -370,98 +374,150 @@ app.get("/get-nearby-grounds", async (req, res) => {
           }
       });
 
-      await session.close();
-  }
-  catch(err) {
-      console.log(err);
+    await session.close();
+  } catch (err) {
+    console.log(err);
   }
   res.json(nearbyGrounds);
 });
-  
+
 //-------------------------------------------------------------------------------------------------------//
 
 //JOIN TEAMS
 
-app.post("/join-team",async function(req,res)
-{
-  
+app.post("/join-team", async function (req, res) {
   console.log(req.body);
-var obj ={
-  userId:req.body.userId,
-  teamName:req.body.teamName,
-  sport :req.body.sport
-  
-}
+  var obj = {
+    userId: req.body.userId,
+    teamName: req.body.teamName,
+    sport: req.body.sport,
+  };
 
   const session = driver.session();
-   session.run('MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)',obj)
-   .then((result)=>{
-    console.log(result);
-    res.json({
-      msg:"success"
+  session
+    .run(
+      "MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)",
+      obj
+    )
+    .then((result) => {
+      if (result.records.length <= 0) {
+        res.json({
+          hasTeam: false,
+        });
+      } else {
+        console.log(result.records[0].get(0).properties);
+        var arr = [];
+        for (let i = 0; i < result.records.length; i++) {
+          arr.push(result.records[i].get(0).properties);
+        }
+        res.json({
+          hasTeam: true,
+          teams: arr,
+        });
+      }
     })
-   }).catch(err=>{console.log(err);}).finally(
-     ()=>{
-       session.close();
-     }
-   );
-        
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      session.close();
+    });
 });
 
 app.get("/team-info", async function (req, res) {
-  
-var obj={userId:req.query.userId};
-const session = driver.session();
+  var obj = { userId: req.query.userId };
+  const session = driver.session();
 
-
-  session.run('MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t',obj).
-  then((result)=>{
-    if(result.records.length<=0)
-    {
-        res.json({
-          hasTeam:false
-        });
-    }
-    else{
-
-      console.log(result.records[0].get(0).properties);
-     var arr=[];
-     for(let i=0;i<result.records.length;i++)
-     {
-       arr.push(result.records[i].get(0).properties);
-     }
-      res.json(
-        {
-          hasTeam:true,
-          teams:arr
-
-        }
-      );
-    }
-
-
-  })
-  .catch(err=>{console.log(err);})
-  .finally(
-    ()=>{
-      session.close();
-    }
-  );
-  ;
-  
-  
- 
-
-
-
-
-
-
+  try {
+    let result = await session.run(
+      "MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t",
+      obj
+    );
+    console.log(result);
+    await session.close();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
+//NEARBY TEAMS
 
+app.post("/get-nearby-teams", async (req, res) => {
+  let teamInfo = {
+    sport: req.body.sport,
+    latitude: parseFloat(req.body.latitude),
+    longitude: parseFloat(req.body.longitude),
+  };
 
-//MY-TEAMS
+  let session = driver.session();
+  let nearbyTeams = [];
+  try {
+    let result = await session.run(
+      "MATCH (t:Team{sports:$sport}) RETURN t",
+      teamInfo
+    );
+
+    if (result.records.length <= 0) {
+      res.json({ msg: "No teams found" });
+    } else {
+      for (let index = 0; index < result.records.length; index++) {
+        let teamLatitude = parseFloat(
+          result.records[index].get(0).properties.latitude
+        );
+        let teamLongitude = parseFloat(
+          result.records[index].get(0).properties.longitude
+        );
+
+        let dist = utils.getDistanceFromLatLonInKm(
+          teamLatitude,
+          teamLongitude,
+          teamInfo.latitude,
+          teamInfo.longitude
+        );
+        if (dist <= 5) {
+          nearbyTeams.push(result.records[index].get(0).properties);
+        }
+      }
+
+      res.json({ teams: nearbyTeams, msg: "Found teams" });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//NEARBY USERS
+
+app.post("/nearby-individuals", async (req, res) => {
+  let userData = {
+    userId: req.body.userId,
+    latitude: parseFloat(req.body.latitude),
+    longitude: parseFloat(req.body.longitude),
+  };
+
+  let session = driver.session();
+  let nearbyUsers = [];
+  try {
+    let result = await session.run(
+      "MATCH(u:User) WHERE u.userId <> $userId RETURN u",
+      userData
+    );
+
+    for (let i = 0; i < result.records.length; i++) {
+      let userLatitude = result.records[i].get(0).properties.latitude;
+      let userLongitude = result.records[i].get(0).properties.longitude;
+
+      let dist = utils.getDistanceFromLatLonInKm(
+        userData.latitude,
+        userData.longitude,
+        userLatitude,
+        userLongitude
+      );
+
+      if (dist < 5) {
+        nearbyUsers.push(result.records[i].get(0).properties);
+      }
+    }
 
 app.get("/captain-teams-search",function(req,res)
 {
@@ -469,6 +525,7 @@ app.get("/captain-teams-search",function(req,res)
   var obj={
     userId:req.query.userId,
   }
+});
 
 const session = driver.session();
 session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',obj).then((result)=>{
@@ -523,16 +580,42 @@ session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',
 })
 
 
-});
+app.get("/my-teams-search", function (req, res) {});
 
 app.get("/profile", auth, function (req, res) {
- 
- res.json({
+  res.json({
     userData: req.user,
     msg: "This is your authorized profile",
   });
 });
 
+//MATCH
+
+app.post("/schedule-match", async (req, res) => {
+  let match = {
+    opponent: req.body.opponent,
+    host: req.body.host,
+    date: DateTime(req.body.date),
+    time: req.body.time,
+  };
+
+  let session = driver.session();
+  try {
+    let result = await session.run(
+      "CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m",
+      match
+    );
+
+    console.log(result);
+    await session.close();
+
+    res.json({ msg: "Match has been scheduled" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.listen(5000, function () {
   console.log("Server running on port 5000");
-});
+}
+);
