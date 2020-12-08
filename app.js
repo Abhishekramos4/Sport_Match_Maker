@@ -396,29 +396,10 @@ var obj ={
   const session = driver.session();
    session.run('MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)',obj)
    .then((result)=>{
-
-    if(result.records.length<=0)
-        {
-            res.json({
-              hasTeam:false
-            });
-        }
-        else{
-
-          console.log(result.records[0].get(0).properties);
-         var arr=[];
-         for(let i=0;i<result.records.length;i++)
-         {
-           arr.push(result.records[i].get(0).properties);
-         }
-          res.json(
-            {
-              hasTeam:true,
-              teams:arr
-
-            }
-          )
-        }
+    console.log(result);
+    res.json({
+      msg:"success"
+    })
    }).catch(err=>{console.log(err);}).finally(
      ()=>{
        session.close();
@@ -432,16 +413,45 @@ app.get("/team-info", async function (req, res) {
 var obj={userId:req.query.userId};
 const session = driver.session();
 
-try{
-  let result = await session.run('MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t',obj);
-  console.log(result);
-  await session.close();
 
-}
-catch(err)
-{
-console.log(err);
-}
+  session.run('MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t',obj).
+  then((result)=>{
+    if(result.records.length<=0)
+    {
+        res.json({
+          hasTeam:false
+        });
+    }
+    else{
+
+      console.log(result.records[0].get(0).properties);
+     var arr=[];
+     for(let i=0;i<result.records.length;i++)
+     {
+       arr.push(result.records[i].get(0).properties);
+     }
+      res.json(
+        {
+          hasTeam:true,
+          teams:arr
+
+        }
+      );
+    }
+
+
+  })
+  .catch(err=>{console.log(err);})
+  .finally(
+    ()=>{
+      session.close();
+    }
+  );
+  ;
+  
+  
+ 
+
 
 
 
@@ -456,8 +466,16 @@ console.log(err);
 app.get("/my-teams-search",function(req,res)
 {
 
+  var obj={
+    userId:req.query.userId,
+    sports:req.query.sport
+  }
 
-
+const session = driver.session();
+session.run('').then((result)=>{
+  console.log(result);
+  
+})
 
 
 });
