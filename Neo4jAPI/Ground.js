@@ -50,7 +50,7 @@ const addGround = function () {
         Longitude:
           turfData[index].Location == null ? "" : turfData[index].Location.lon,
       };
-      console.log(d);
+      // console.log(d);
       let session = driver.session();
 
       try {

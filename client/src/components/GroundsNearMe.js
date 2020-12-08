@@ -1,8 +1,8 @@
 import React,{useState,useEffect} from 'react';
 import NavbarProfile from './NavbarProfile'
-import GroundsMap from './GroundsMap';
 import {makeStyles} from '@material-ui/core/styles'
 import axios from 'axios';
+import GroundsMapHolder from './GroundsMapHolder';
 
 const useStyles=makeStyles((theme)=>(
     {
@@ -32,33 +32,35 @@ const [groundData,setGroundData]=useState([]);
      params:{
         latitude:19.113646,longitude:72.869736,
      }
-
+  
  }).then((res)=>{
-  console.log(res);
- });
-// var arr=[{name: "Dream Sports Fields Pvt Ltd..",
-// address: "Crystal Plaza, Oshivara Link Road, Andheri West, Mumbai - 400053, Opposite Infinti Mall",
-// contact: "07947172083",
-// ratings: "4.1",
-// location: {
-//     lat: 19.1251368,
-//     lon: 72.841665
-// },
-// },
-// {
-//     name: "Get Set Play",
-//     address: "Piramal Agastya Private Limited, Kamani-kurla West, Mumbai - 400070, Opposite Fire Brigade",
-//    contact: "07947190450",
-//     ratings: "5.0",
-//    location: {
-//         lat: 19.0867259,
-//         lon: 72.8860501
-//     }
-// }
-// ];
-//  setGroundData(arr);
+   console.log(res.data);
+ setGroundData(res.data);
+ })
 
     },[]);
+
+    // useEffect(()=>{
+    // console.log(groundData);
+    // var arr=[
+    //   {
+    //         'type': 'Feature',
+    //         'properties': {
+    //         'description':
+    //         '<h5>'+groundData[0].Name+'</h5>',
+          
+          
+    //         'icon': 'theatre'
+    //         },
+    //         'geometry': {
+    //         'type': 'Point',
+    //         'coordinates': [ groundData[0].Longitude,groundData[0].location.Latitude]
+    //         }
+            
+    //   }]
+    // },[groundData]);
+
+  
 
 return (
 
@@ -66,7 +68,7 @@ return (
 <NavbarProfile/>
 <main className={classes.content}>
 <div className={classes.toolbar} />
-{/* <GroundsMap myLat={19.113646} myLon={72.869736} groundData={groundData}/> */}
+<GroundsMapHolder groundData={groundData}/>
 </main>
 </div>
 
