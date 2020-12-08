@@ -352,25 +352,29 @@ app.get("/get-nearby-grounds", async (req, res) => {
   console.log(userLocation);
   let nearbyGrounds = [];
   const session = driver.session();
-  try{
-      let result = await session.run('MATCH(t:Turf) RETURN t');
+  try {
+    let result = await session.run("MATCH(t:Turf) RETURN t");
 
-      result.records.map(record => {
-          let groundLongitude = record.get(0).properties.longitude;
-          let groundLatitude = record.get(0).properties.latitude;
-          groundLongitude = parseFloat(groundLongitude);
-          groundLatitude = parseFloat(groundLatitude);
-          var dist = ground.getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
-          if(dist < 4){
-              nearbyGrounds.push({
+    result.records.map((record) => {
+      let groundLongitude = record.get(0).properties.longitude;
+      let groundLatitude = record.get(0).properties.latitude;
+      groundLongitude = parseFloat(groundLongitude);
+      groundLatitude = parseFloat(groundLatitude);
+      var dist = utils.getDistanceFromLatLonInKm(
+        groundLatitude,
+        groundLongitude,
+        userLocation.lat,
+        userLocation.long
+      );
+      if (dist < 2) {
+        nearbyGrounds.push({
                   Name: record.get(0).properties.name,
                   Address: record.get(0).properties.address,
                   Contact: record.get(0).properties.contact,
                   Ratings: record.get(0).properties.ratings,
                   Latitude: parseFloat(record.get(0).properties.latitude),
-                  Longitude: parseFloat(record.get(0).properties.longitude)
-                  
-              });
+                  Longitude: parseFloat(record.get(0).properties.longitude),
+                   });
           }
       });
 
@@ -518,6 +522,13 @@ app.post("/nearby-individuals", async (req, res) => {
         nearbyUsers.push(result.records[i].get(0).properties);
       }
     }
+    await session.close();
+
+    res.json({ nearbyUsers: nearbyUsers });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 app.get("/captain-teams-search",function(req,res)
 {
@@ -580,7 +591,7 @@ session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',
 })
 
 
-app.get("/my-teams-search", function (req, res) {});
+
 
 app.get("/profile", auth, function (req, res) {
   res.json({
@@ -617,5 +628,4 @@ app.post("/schedule-match", async (req, res) => {
 
 app.listen(5000, function () {
   console.log("Server running on port 5000");
-}
-);
+});
