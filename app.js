@@ -535,8 +535,7 @@ app.get("/captain-teams-search",function(req,res)
 
   var obj={
     userId:req.query.userId,
-  }
-});
+  };
 
 const session = driver.session();
 session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',obj).then((result)=>{
@@ -588,7 +587,9 @@ session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',
   console.log(err);
 }).finally(()=>{
   session.close();
-})
+});
+
+});
 
 
 
@@ -626,6 +627,5 @@ app.post("/schedule-match", async (req, res) => {
   }
 });
 
-app.listen(5000, function () {
-  console.log("Server running on port 5000");
-});
+
+
