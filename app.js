@@ -202,6 +202,9 @@ app.post("/login", async (req, res) => {
     .then((res) => {
       console.log(res);
     })
+    .then(() => {
+      utils.setSports();
+    })
     .catch((err) => {
       console.log(err);
     })
@@ -239,7 +242,7 @@ app.get("/set-interested-sports", async (req, res) => {
   try {
     let session = driver.session();
     interestedSports = await session.run(
-      "MERGE(u:User{userId:$userId}) MERGE(s:Sport{sport:$interestedSport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
+      "MERGE(u:User{userId:$userId}) MERGE(s:Sport{name:$interestedSport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
       data
     );
     await session.close();
@@ -541,26 +544,28 @@ app.get("/profile", auth, function (req, res) {
 
 //MATCH
 
-app.post("/schedule-match", async(req,res) => {
+app.post("/schedule-match", async (req, res) => {
   let match = {
     opponent: req.body.opponent,
-    host : req.body.host,
-    date : DateTime(req.body.date),
-    time : req.body.time,
-  }
+    host: req.body.host,
+    date: DateTime(req.body.date),
+    time: req.body.time,
+  };
 
   let session = driver.session();
-  try{
-    let result = await session.run('CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m', match);
+  try {
+    let result = await session.run(
+      "CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m",
+      match
+    );
 
     console.log(result);
     await session.close();
 
-    res.json({msg:"Match has been scheduled"});
-  }catch(err){
+    res.json({ msg: "Match has been scheduled" });
+  } catch (err) {
     console.log(err);
   }
-
 });
 
 app.listen(5000, function () {
