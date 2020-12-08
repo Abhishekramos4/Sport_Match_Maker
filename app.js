@@ -11,6 +11,7 @@ const driver = require("./Neo4jAPI/config");
 const team = require("./Neo4jAPI/Team");
 const ground = require("./Neo4jAPI/Ground");
 const utils = require("./Neo4jAPI/utils/distance_utils");
+const { DateTime } = require("neo4j-driver");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -214,11 +215,11 @@ app.get("/get-interested-sports", async (req, res) => {
     userId: req.query.userId,
   };
 
-  var interestedSports;
+  let interestedSports;
   try {
     let session = driver.session();
     interestedSports = await session.run(
-      "MATCH(u:User{userId: $userId}) RETURN u.interestedSports",
+      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]-> (s:Sport) RETURN s",
       userId
     );
     await session.close();
@@ -226,7 +227,7 @@ app.get("/get-interested-sports", async (req, res) => {
     console.log(err);
   }
 
-  res.json(interestedSports);
+  res.json(interestedSports.records[0].get(0).properties);
 });
 
 app.get("/set-interested-sports", async (req, res) => {
@@ -238,7 +239,7 @@ app.get("/set-interested-sports", async (req, res) => {
   try {
     let session = driver.session();
     interestedSports = await session.run(
-      "MATCH(u:User{userId: $userId}) SET u.interestedSports = $interestedSports RETURN u.interestedSports",
+      "MERGE(u:User{userId:$userId}) MERGE(s:Sport{sport:$interestedSport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
       data
     );
     await session.close();
@@ -442,7 +443,7 @@ app.get("/team-info", async function (req, res) {
 
 //NEARBY TEAMS
 
-app.post("/get-nearby-teams", (req, res) => {
+app.post("/get-nearby-teams", async (req, res) => {
   let teamInfo = {
     sport: req.body.sport,
     latitude: parseFloat(req.body.latitude),
@@ -451,28 +452,80 @@ app.post("/get-nearby-teams", (req, res) => {
 
   let session = driver.session();
   let nearbyTeams = [];
+  try {
+    let result = await session.run(
+      "MATCH (t:Team{sports:$sport}) RETURN t",
+      teamInfo
+    );
 
-  session
-    .run("MATCH (t:Team{sports:$sport}) RETURN t", teamInfo)
-    .then((result) => {
-      if(result.records.length <= 0){
-        res.json({msg: "No teams found"});
-      }
-      else{
-        for (let index = 0;index< result.records.length; index++){
-          let teamLatitude = parseFloat(result.records[index].get(0).properties.latitude);
-          let teamLongitude = parseFloat(result.records[index].get(0).properties.longitude);
+    if (result.records.length <= 0) {
+      res.json({ msg: "No teams found" });
+    } else {
+      for (let index = 0; index < result.records.length; index++) {
+        let teamLatitude = parseFloat(
+          result.records[index].get(0).properties.latitude
+        );
+        let teamLongitude = parseFloat(
+          result.records[index].get(0).properties.longitude
+        );
 
-          let dist = utils.getDistanceFromLatLonInKm(teamLatitude,teamLongitude, teamInfo.latitude, teamInfo.longitude);
-          if(dist <= 5){
-            nearbyTeams.push(result.records[index].get(0).properties);
-          }
-          
+        let dist = utils.getDistanceFromLatLonInKm(
+          teamLatitude,
+          teamLongitude,
+          teamInfo.latitude,
+          teamInfo.longitude
+        );
+        if (dist <= 5) {
+          nearbyTeams.push(result.records[index].get(0).properties);
         }
-
-        res.json({teams : nearbyTeams, msg: "Found teams"});
       }
-    });
+
+      res.json({ teams: nearbyTeams, msg: "Found teams" });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//NEARBY USERS
+
+app.post("/nearby-individuals", async (req, res) => {
+  let userData = {
+    userId: req.body.userId,
+    latitude: parseFloat(req.body.latitude),
+    longitude: parseFloat(req.body.longitude),
+  };
+
+  let session = driver.session();
+  let nearbyUsers = [];
+  try {
+    let result = await session.run(
+      "MATCH(u:User) WHERE u.userId <> $userId RETURN u",
+      userData
+    );
+
+    for (let i = 0; i < result.records.length; i++) {
+      let userLatitude = result.records[i].get(0).properties.latitude;
+      let userLongitude = result.records[i].get(0).properties.longitude;
+
+      let dist = utils.getDistanceFromLatLonInKm(
+        userData.latitude,
+        userData.longitude,
+        userLatitude,
+        userLongitude
+      );
+
+      if (dist < 5) {
+        nearbyUsers.push(result.records[i].get(0).properties);
+      }
+    }
+
+    await session.close();
+
+    res.json({ nearbyUsers: nearbyUsers });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 //MY-TEAMS
@@ -484,6 +537,30 @@ app.get("/profile", auth, function (req, res) {
     userData: req.user,
     msg: "This is your authorized profile",
   });
+});
+
+//MATCH
+
+app.post("/schedule-match", async(req,res) => {
+  let match = {
+    opponent: req.body.opponent,
+    host : req.body.host,
+    date : DateTime(req.body.date),
+    time : req.body.time,
+  }
+
+  let session = driver.session();
+  try{
+    let result = await session.run('CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m', match);
+
+    console.log(result);
+    await session.close();
+
+    res.json({msg:"Match has been scheduled"});
+  }catch(err){
+    console.log(err);
+  }
+
 });
 
 app.listen(5000, function () {
