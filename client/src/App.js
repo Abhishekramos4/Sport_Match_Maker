@@ -9,9 +9,10 @@ import GroundsNearMe from './components/GroundsNearMe';
 import  Error404 from './components/Error404';
 import JoinTeam from './components/JoinTeam';
 import ScheduledMatch from './components/ScheduledMatch';
+import FindMatch from './components/FindMatch'
 import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
 import './App.css';
-import ScheduledMatches from './components/ScheduledMatch';
+
 
 
 function App() {
@@ -37,7 +38,8 @@ function App() {
   <Route path="/interested-sports"  component={InterestedSports}/>
   <Route path="/join-team" component={JoinTeam}/>
   <Route path="/grounds-near-me" component={GroundsNearMe}/>
-  <Route path="/scheduled-matches" component={ScheduledMatches}/>
+  <Route path="/scheduled-matches" component={ScheduledMatch}/>
+  <Route path="/find-match" component={FindMatch}/>
   <Route path="*" component={Error404}/>
   </Switch>
 

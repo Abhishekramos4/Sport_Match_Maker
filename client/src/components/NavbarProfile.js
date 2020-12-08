@@ -87,7 +87,7 @@ function NavbarProfile()
         
         <Divider />
         <List>
-        <Link to='/profile' className={classes.links}>
+        <Link to='/find-match' className={classes.links}>
             
             <ListItem button key='Find A Match'>
             <ListItemIcon><SearchIcon/></ListItemIcon>

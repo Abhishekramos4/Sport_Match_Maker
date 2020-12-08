@@ -17,11 +17,6 @@ FormLabel,
 Button,
 Dialog,
 Slide,
-DialogActions,
-    DialogTitle,
-    DialogContentText,
-    DialogContent,
-
 } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import axios from 'axios';
@@ -55,113 +50,12 @@ color:"black",
   },
 }));
 
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 function Profile() {
 
-const [isIndividual,setIsIndividual]=useState(false);
 const[fetching,setIsFetched] = useState(true);
-const[radioVal,setRadioVal]=useState("team");
-const[userData,setUserData ]=useState({});
-const[matchForm,setMatchForm]=useState({
-
-  type:"team",
-  team:"",
-  date:"",
-  time:"",
-  sport:""
-  
-
-});
-const[founded,setFounded]=useState([]);
-
-const [openDialog,setOpenDialog]=useState(false);
-
-function handleDialogClose()
-{
-   setOpenDialog(false);
-}
-
-function handleDialogOpen()
-{
-    setOpenDialog(true);
-}
-
-function handleOnChangeRadio(event)
-{
-  var name=event.target.name;
-  var val=event.target.value;
-
-  
-    setRadioVal(val);
-    setMatchForm((prev)=>(
-{
-  ...prev,
-[name]:val
-}
-    ))
-    if(val=="individual")
-    {
-      setIsIndividual(true);
-    }
-    else{
-      setIsIndividual(false);
-    }
-  
-
-  
-  
-}
 
 
-function handleOnChange(event)
-{
-  var name=event.target.name;
-  var val=event.target.value;
-
-  setMatchForm((prev)=>{
-    return({
-      ...prev,
-      [name]:val
-
-    })
-  })
-}
-
-
-function handleMatchFind()
-{
-
-  // axios.post
-  var teams=[{
-    teamName:"Barcelona",
-    sport:"Football",
-    captain:"sr4",
-    teamLocation:{
-      longitude:72.831757,
-      latitude:19.116541
-    }
-  },{
-    teamName:"Juventus",
-    sport:"Football",
-    captain:"cr7",
-    teamLocation:{
-      longitude:72.861076,
-      latitude:19.112104
-    }
-
-  }];
-
-  setFounded(teams);
-  handleDialogOpen();
-
-
-
-
-
-}
   
 
 
@@ -178,6 +72,8 @@ useEffect (()=>{
         localStorage.setItem("userId",res.data.userData.userId);
         localStorage.setItem("userFname",res.data.userData.fname);
         localStorage.setItem("userLname",res.data.userData.lname);
+        localStorage.setItem("userLat",res.data.userData.latitude);
+        localStorage.setItem("userLong",res.data.userData.longitude);
         
     }).catch(err=>{console.log(err);}).then(()=>{
         setIsFetched(false);
@@ -194,138 +90,10 @@ useEffect (()=>{
    <div>
     { fetching? <Loading/>:
     <div className={classes.root}>
-      <NavbarProfile fname={userData.fname} lname={userData.lname}/>
+      <NavbarProfile />
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Typography paragraph>
-        <Paper  className={classes.formPaper}>
-          <Typography variant="h5">Find A Match</Typography>
-          <form>
-      <FormControl style={{width:"100%"}} component="fieldset" className={classes.fields} >
-      <FormLabel>Type of Sport </FormLabel>
-      <RadioGroup  className={classes.radio} name="type" value={radioVal} onChange={handleOnChangeRadio}>
-        <Grid container>
-          <Grid item xs={12} md={6}><FormControlLabel  color="default" value="team" control={<Radio />} label="Team" /></Grid>
-          <Grid item xs={12} md={6}><FormControlLabel value="individual" control={<Radio />} label="Indivdual" />
-        </Grid>
-        </Grid>
-         </RadioGroup>
-    </FormControl>
-
-<Grid container>
-
-<Grid item xs={12} md={6}>
-{
-  isIndividual?<FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
-        <InputLabel>Sport</InputLabel>
-        <Select
-          name="sport"
-          label="Sport"
-        onChange={handleOnChange}
-        >
-          <MenuItem value="Chess">Chess</MenuItem>
-          <MenuItem value="Badminton">Badminton</MenuItem>
-          <MenuItem value="VolleyBall">VolleyBall</MenuItem>
-        </Select>
-      </FormControl> :
-      <FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
-        <InputLabel>Sport</InputLabel>
-        <Select
-          name="sport"
-          label="Sport"
-        onChange={handleOnChange}
-        >
-          <MenuItem value="Football">Football</MenuItem>
-          <MenuItem value="Cricket">Cricket</MenuItem>
-          <MenuItem value="VolleyBall">VolleyBall</MenuItem>
-        </Select>
-      </FormControl>
-}
-
-</Grid>
-{
-  isIndividual===false?  <Grid item xs={12} md={6}>
-  <FormControl  className={classes.fields} variant="outlined" style={{width:"70%"}} >
-        <InputLabel>Teams</InputLabel>
-        <Select
-          name="team"
-          label="team"
-          onChange={handleOnChange}
-        >
-          <MenuItem value="ABC">ABC</MenuItem>
-          <MenuItem value="XYZ">XYZ</MenuItem>
-          <MenuItem value="EFG">EFG</MenuItem>
-        </Select>
-      </FormControl>
-  </Grid>  
-  :
-  <Grid item xs={12} md={6}>
-  
-  </Grid> 
-
-}
-
-
-</Grid>
-
-
-<Grid container >
- <Grid item xs={12} md={6}>
-  <TextField
-  onChange={handleOnChange}
-   className={classes.fields}
-  style={{width:"70%"}}
-  name="date"
-    id="date"
-    variant="outlined"
-    label="Match Date"
-    type="date"
-    InputLabelProps={{
-
-      shrink: true,
-    }}
-  />
-  </Grid>
-  <Grid  item xs={12} md={6}>
-  <TextField
-  onChange={handleOnChange}
-   className={classes.fields}
-   name="time"
-    style={{width:"70%"}}
-    id="time"
-    variant="outlined"
-    label="Match Time"
-    type="time"
-    InputLabelProps={{
-
-      shrink: true,
-    }}
-  />
-
-  
-  </Grid>
-</Grid>
-<Grid container>
-  <Grid item xs={12} md={10}>
-
-  </Grid>
-  <Grid item xs={12} md={2}>
-  <Button className={classes.fields} variant="contained" style={{backgroundColor:"black",
-  color:"white"}} onClick={handleMatchFind}>
- Find
-</Button>
-  </Grid>
-</Grid>
-
-
-</form>
-  </Paper>
-</Typography>
- <Dialog fullScreen open={openDialog} onClose={handleDialogClose} TransitionComponent={Transition} >
-       <FoundTeams nearbyTeams= {founded} closeFunc={handleDialogClose} />
-   </Dialog>
-
-
+       <Typography>This is Your Profile</Typography>
       </main>
     </div>
     }

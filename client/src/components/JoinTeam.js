@@ -62,6 +62,8 @@ function JoinTeam()
     const[createAlert,setCreateAlert]= useState(false);
     const [joinAlert,setJoinAlert] = useState(false);
     const [searchFailAlert,setSearchFailAlert]=useState(false);
+    const [joinFailAlert,setJoinFailAlert] = useState(false);
+    const [joinSuccessAlert,setJoinSuccessAlert]= useState(false);
     const [DialogData,setDialogData] = useState({teamName:"",sport:"",captain:""});
     
     const [searchForm,setSearchForm] = useState({
@@ -116,6 +118,23 @@ function JoinTeam()
     function join()
     {
 
+      
+      axios.post("http://localhost:5000/join-team",{
+        ...searchForm,
+        userId:localStorage.getItem("userId")
+      }).then((res)=>{
+        setDialogOpen(false);
+          
+          if(res.data.msg=="success")
+          {
+              setJoinSuccessAlert(true);
+          }
+          else{
+
+            setJoinFailAlert(false);
+
+          }
+      })
     }
 
     function handleSubmitTeamSearch()
@@ -190,6 +209,30 @@ function JoinTeam()
       setSearchFailAlert(false);
 
     }
+
+    function handleAlertCloseJoinFail(event,reason)
+    {
+
+      if (reason === "clickaway") {
+        return;
+      }
+  
+      setJoinFailAlert(false);
+
+    }
+
+    function handleAlertCloseJoinSuccess(event,reason)
+    {
+
+      if (reason === "clickaway") {
+        return;
+      }
+  
+      setJoinSuccessAlert(false);
+
+    }
+
+
 
 function Alert(props) {
       return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -344,7 +387,9 @@ function MyAlert({open,handleClose,severity,msg})
     </Paper>
     <MyAlert open={createAlert} severity="success"  msg="Team Successfully Created" handleClose={handleAlertCloseCreate}/>
     <MyAlert open={joinAlert} severity="success"  msg="Team Successfully Joined" handleClose={handleAlertCloseJoin} />
-    <MyAlert open={searchFailAlert} severity="error"  msg="Team Search Failed" handleClose={handleAlertCloseSearchFail}/>      
+    <MyAlert open={searchFailAlert} severity="error"  msg="Team Search Failed" handleClose={handleAlertCloseSearchFail}/>
+    <MyAlert open={joinFailAlert} severity="error"  msg="Failed to join Team. Try Again" handleClose={handleAlertCloseJoinFail}/>
+    <MyAlert open={joinSuccessAlert} severity="success"  msg="Joined Team Successfully" handleClose={handleAlertCloseJoinSuccess}/>      
 </main>
     </div>
 

@@ -12,11 +12,13 @@ function Map(props)
 
     }
 
+    
   
     const [map, setMap] = useState(null);
     const mapContainer = useRef(null);
     const{latitude,longitude,teams}=props
   
+
 
   
 
@@ -41,6 +43,7 @@ function Map(props)
 
    }
 
+   console.log(teamPopups);
 
 
 
@@ -61,7 +64,7 @@ function Map(props)
 
 const marker = new mapboxgl.Marker().setLngLat([longitude,latitude]).setPopup(popup).addTo(map);
 
- 
+ console.log(teamPopups);
 map.on("load", () => {
           
       
