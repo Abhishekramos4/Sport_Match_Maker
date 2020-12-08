@@ -271,25 +271,7 @@ app.post("/create-team", async (req, res) => {
 
 //
 
-app.get("/team-info", function (req, res) {
-  var user = dummyUsers[1];
-  var obj = {
-    hasTeam: false,
-    teams: [],
-  };
 
-  if (user.teams.length !== 0) {
-    obj.hasTeam = true;
-
-    var i;
-    for (i = 0; i < user.teams.length; i++) {
-      var foundteam = dummyTeams.find((team) => user.teams[i] == team.teamName);
-      obj.teams.push(foundteam);
-    }
-
-    res.json(obj);
-  }
-});
 
 app.post("/team-search", function (req, res) {
   var teamSearchObj = {
@@ -412,31 +394,68 @@ var obj ={
 }
 
   const session = driver.session();
-  try{
-      let result = await session.run('MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)',obj);
+   session.run('MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)',obj)
+   .then((result)=>{
 
-        console.log(result);
+    if(result.records.length<=0)
+        {
+            res.json({
+              hasTeam:false
+            });
+        }
+        else{
 
-      await session.close();
-  }
-  catch(err) {
-      console.log(err);
-  }
-  res.json({
-    msg:"success"
-  });
+          console.log(result.records[0].get(0).properties);
+         var arr=[];
+         for(let i=0;i<result.records.length;i++)
+         {
+           arr.push(result.records[i].get(0).properties);
+         }
+          res.json(
+            {
+              hasTeam:true,
+              teams:arr
+
+            }
+          )
+        }
+   }).catch(err=>{console.log(err);}).finally(
+     ()=>{
+       session.close();
+     }
+   );
+        
+});
+
+app.get("/team-info", async function (req, res) {
+  
+var obj={userId:req.query.userId};
+const session = driver.session();
+
+try{
+  let result = await session.run('MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t',obj);
+  console.log(result);
+  await session.close();
+
+}
+catch(err)
+{
+console.log(err);
+}
+
+
+
 
 
 });
 
 
 
-
-
 //MY-TEAMS
 
-app.get("/my-team-search",function(req,res)
+app.get("/my-teams-search",function(req,res)
 {
+
 
 
 
