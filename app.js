@@ -10,6 +10,7 @@ const auth = require("./auth");
 const driver = require("./Neo4jAPI/config");
 const team = require("./Neo4jAPI/Team");
 const ground = require("./Neo4jAPI/Ground");
+const utils = require("./Neo4jAPI/utils/distance_utils");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -173,7 +174,6 @@ app.post("/login", async (req, res) => {
           status: 400,
         };
       } else {
-        
         if (
           loginObj.password === result.records[0].get(0).properties.password
         ) {
@@ -260,18 +260,18 @@ app.post("/create-team", async (req, res) => {
     latitude: req.body.latitude,
     longitude: req.body.longitude,
   };
-  
 
-  team.createTeam(teamInfo).then((result)=>{
-    res.json({msg:"success"})
-  }).catch(err=>{console.log(err)});
-
-  
+  team
+    .createTeam(teamInfo)
+    .then((result) => {
+      res.json({ msg: "success" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 //
-
-
 
 app.post("/team-search", function (req, res) {
   var teamSearchObj = {
@@ -348,141 +348,139 @@ app.get("/get-nearby-grounds", async (req, res) => {
   console.log(userLocation);
   let nearbyGrounds = [];
   const session = driver.session();
-  try{
-      let result = await session.run('MATCH(t:Turf) RETURN t');
+  try {
+    let result = await session.run("MATCH(t:Turf) RETURN t");
 
-      result.records.map(record => {
-          let groundLongitude = record.get(0).properties.longitude;
-          let groundLatitude = record.get(0).properties.latitude;
-          groundLongitude = parseFloat(groundLongitude);
-          groundLatitude = parseFloat(groundLatitude);
-          var dist = ground.getDistanceFromLatLonInKm(groundLatitude, groundLongitude, userLocation.lat, userLocation.long);
-          if(dist < 2){
-              nearbyGrounds.push({
-                  Name: record.get(0).properties.name,
-                  Address: record.get(0).properties.address,
-                  Contact: record.get(0).properties.contact,
-                  Ratings: record.get(0).properties.ratings,
-                  Latitude: parseFloat(record.get(0).properties.latitude),
-                  Longitude: parseFloat(record.get(0).properties.longitude)
-                  
-              });
-          }
-      });
+    result.records.map((record) => {
+      let groundLongitude = record.get(0).properties.longitude;
+      let groundLatitude = record.get(0).properties.latitude;
+      groundLongitude = parseFloat(groundLongitude);
+      groundLatitude = parseFloat(groundLatitude);
+      var dist = utils.getDistanceFromLatLonInKm(
+        groundLatitude,
+        groundLongitude,
+        userLocation.lat,
+        userLocation.long
+      );
+      if (dist < 2) {
+        nearbyGrounds.push({
+          Name: record.get(0).properties.name,
+          Address: record.get(0).properties.address,
+          Contact: record.get(0).properties.contact,
+          Ratings: record.get(0).properties.ratings,
+          Latitude: parseFloat(record.get(0).properties.latitude),
+          Longitude: parseFloat(record.get(0).properties.longitude),
+        });
+      }
+    });
 
-      await session.close();
-  }
-  catch(err) {
-      console.log(err);
+    await session.close();
+  } catch (err) {
+    console.log(err);
   }
   res.json(nearbyGrounds);
 });
-  
+
 //-------------------------------------------------------------------------------------------------------//
 
 //JOIN TEAMS
 
-app.post("/join-team",async function(req,res)
-{
-  
+app.post("/join-team", async function (req, res) {
   console.log(req.body);
-var obj ={
-  userId:req.body.userId,
-  teamName:req.body.teamName,
-  sport :req.body.sport
-  
-}
+  var obj = {
+    userId: req.body.userId,
+    teamName: req.body.teamName,
+    sport: req.body.sport,
+  };
 
   const session = driver.session();
-   session.run('MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)',obj)
-   .then((result)=>{
-    console.log(result);
-    res.json({
-      msg:"success"
+  session
+    .run(
+      "MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)",
+      obj
+    )
+    .then((result) => {
+      if (result.records.length <= 0) {
+        res.json({
+          hasTeam: false,
+        });
+      } else {
+        console.log(result.records[0].get(0).properties);
+        var arr = [];
+        for (let i = 0; i < result.records.length; i++) {
+          arr.push(result.records[i].get(0).properties);
+        }
+        res.json({
+          hasTeam: true,
+          teams: arr,
+        });
+      }
     })
-   }).catch(err=>{console.log(err);}).finally(
-     ()=>{
-       session.close();
-     }
-   );
-        
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      session.close();
+    });
 });
 
 app.get("/team-info", async function (req, res) {
-  
-var obj={userId:req.query.userId};
-const session = driver.session();
+  var obj = { userId: req.query.userId };
+  const session = driver.session();
 
-
-  session.run('MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t',obj).
-  then((result)=>{
-    if(result.records.length<=0)
-    {
-        res.json({
-          hasTeam:false
-        });
-    }
-    else{
-
-      console.log(result.records[0].get(0).properties);
-     var arr=[];
-     for(let i=0;i<result.records.length;i++)
-     {
-       arr.push(result.records[i].get(0).properties);
-     }
-      res.json(
-        {
-          hasTeam:true,
-          teams:arr
-
-        }
-      );
-    }
-
-
-  })
-  .catch(err=>{console.log(err);})
-  .finally(
-    ()=>{
-      session.close();
-    }
-  );
-  ;
-  
-  
- 
-
-
-
-
-
-
+  try {
+    let result = await session.run(
+      "MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t",
+      obj
+    );
+    console.log(result);
+    await session.close();
+  } catch (err) {
+    console.log(err);
+  }
 });
 
+//NEARBY TEAMS
 
+app.post("/get-nearby-teams", (req, res) => {
+  let teamInfo = {
+    sport: req.body.sport,
+    latitude: parseFloat(req.body.latitude),
+    longitude: parseFloat(req.body.longitude),
+  };
+
+  let session = driver.session();
+  let nearbyTeams = [];
+
+  session
+    .run("MATCH (t:Team{sports:$sport}) RETURN t", teamInfo)
+    .then((result) => {
+      if(result.records.length <= 0){
+        res.json({msg: "No teams found"});
+      }
+      else{
+        for (let index = 0;index< result.records.length; index++){
+          let teamLatitude = parseFloat(result.records[index].get(0).properties.latitude);
+          let teamLongitude = parseFloat(result.records[index].get(0).properties.longitude);
+
+          let dist = utils.getDistanceFromLatLonInKm(teamLatitude,teamLongitude, teamInfo.latitude, teamInfo.longitude);
+          if(dist <= 5){
+            nearbyTeams.push(result.records[index].get(0).properties);
+          }
+          
+        }
+
+        res.json({teams : nearbyTeams, msg: "Found teams"});
+      }
+    });
+});
 
 //MY-TEAMS
 
-app.get("/my-teams-search",function(req,res)
-{
-
-  var obj={
-    userId:req.query.userId,
-    sports:req.query.sport
-  }
-
-const session = driver.session();
-session.run('').then((result)=>{
-  console.log(result);
-  
-})
-
-
-});
+app.get("/my-teams-search", function (req, res) {});
 
 app.get("/profile", auth, function (req, res) {
- 
- res.json({
+  res.json({
     userData: req.user,
     msg: "This is your authorized profile",
   });
