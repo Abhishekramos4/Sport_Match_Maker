@@ -79,7 +79,7 @@ const handleCloseDialog = () => {
           
           axios.get("http://localhost:5000/team-info",{
             params:{
-              userId:"ab123"
+              userId:localStorage.getItem("userId")
             }
           }).then((res)=>{
             console.log(res.data);

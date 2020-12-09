@@ -106,7 +106,7 @@ function sendMatchRequest(teamName)
 {isLoading?<Loading/>:
             <List>
             {
-            teams.map((team,index)=>{
+            nearbyTeams.map((team,index)=>{
                         return (
                             <ListItem key={team.name}>
                                 <Card className={classes.teamCard}>

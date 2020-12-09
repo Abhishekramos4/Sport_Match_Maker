@@ -22,113 +22,7 @@ app.get("/", async (req, res) => {
   res.send("Server is running on port 5000");
 });
 
-// var dummyUsers=[{
-//    userId:"ab12",
-//    fname:"Abhishek",
-//    lname:"Kekane",
-//    email:"abhishekkekane@gmail.com",
-//    latitude:19.1646,
-//    longitude:72.8493,
-//    password:"1234",
-//    teams:[]
 
-// },{
-//    userId:"sr4",
-//    fname:"Sergio",
-//    lname:"Ramos",
-//    email:"sergioramos@gmail.com",
-//    latitude:19.113646,
-//    longitude:72.869736,
-//    password:"1234",
-//    teams:["Real Madrid","Mumbai Indians"],
-
-// },{
-//    userId:"rs45",
-//    fname:"Rohit",
-//    lname:"Sharma",
-//    email:"rs45@gmail.com",
-//    latitude:19.113646,
-//    longitude:72.869736,
-//    password:"1234",
-//    teams:["Real Madrid","Mumbai Indians"],
-
-// },
-
-// {
-//    userId:"eh7",
-//    fname:"Eden",
-//    lname:"Hazard",
-//    email:"edenhazard@gmail.com",
-//    latitude:19.113646,
-//    longitude:72.869736,
-//    password:"1234",
-//    teams:["Real Madrid"],
-
-// }
-
-// ];
-
-// var dummyTeams=[{
-// teamName:"Real Madrid",
-// captain:"sr4",
-// sport:"Football",
-// players:[{
-//    userId:"sr4",
-//    fname:"Sergio",
-//    lname:"Ramos",
-//    email:"sergioramos@gmail.com",
-//    latitude:19.113646,
-//    longitude:72.869736,
-//    password:"1234",
-//    teams:["Real Madrid","Mumbai Indians"],
-
-// },
-// {
-//    userId:"eh7",
-//    fname:"Eden",
-//    lname:"Hazard",
-//    email:"edenhazard@gmail.com",
-//    latitude:19.113646,
-//    longitude:72.869736,
-//    password:"1234",
-//    teams:["Real Madrid"],
-
-// }
-
-// ],
-// limit:25
-// },
-// {
-//    teamName:"Mumbai Indians",
-//    captain:"rs45",
-//    sport:"Cricket",
-//    players:[{
-//       userId:"sr4",
-//       fname:"Sergio",
-//       lname:"Ramos",
-//       email:"sergioramos@gmail.com",
-//       latitude:19.113646,
-//       longitude:72.869736,
-//       password:"1234",
-//       teams:["Real Madrid","Mumbai Indians"],
-
-//    },
-//    {
-//       userId:"rs45",
-//       fname:"Rohit",
-//       lname:"Sharma",
-//       email:"rs45@gmail.com",
-//       latitude:19.113646,
-//       longitude:72.869736,
-//       password:"1234",
-//       teams:["Real Madrid","Mumbai Indians"],
-
-//    }],
-//    limit:25
-
-// }
-
-// ]
 
 app.post("/register", async (req, res) => {
   var registerObj = {
@@ -217,39 +111,68 @@ app.get("/get-interested-sports", async (req, res) => {
     userId: req.query.userId,
   };
 
-  let interestedSports;
-  try {
+  
     let session = driver.session();
-    interestedSports = await session.run(
-      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]-> (s:Sport) RETURN s",
+     session.run(
+      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]-> (s:IndividualSport) RETURN s",
       userId
-    );
-    await session.close();
-  } catch (err) {
-    console.log(err);
-  }
+    ).then((result)=>{
+        console.log(result);
+        var arr=[];
+        for(var i=0;i<result.records.length;i++)
+        {
+          arr.push(result.records[i].get(0).properties.name);
+        }
+        console.log(arr);
+        res.json({
+          interests:arr
+        })
+    }).
+    catch((err)=>{
+      console.log(err);
+    }).finally(()=>{
+      session.close();
+    })
 
-  res.json(interestedSports.records[0].get(0).properties);
+  
 });
 
-app.get("/set-interested-sports", async (req, res) => {
-  const data = {
-    userId: req.query.userId,
-    interestedSports: req.query.interestedSports,
-  };
+app.post("/set-interested-sports",  (req, res) => {
+ 
+   var arr=req.body.arr;
+  var userId=req.body.userId;
 
-  try {
-    let session = driver.session();
-    interestedSports = await session.run(
-      "MERGE(u:User{userId:$userId}) MERGE(s:Sport{name:$interestedSport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
-      data
-    );
-    await session.close();
-  } catch (err) {
-    console.log(err);
-  }
-
-  res.json(data.interestedSports);
+  var session;
+  for(var i =0;i<arr.length;i++)
+      {  
+        var sport=arr[i];
+        session=driver.session();
+        session
+        .run(
+          "MERGE(u:User{userId:$userId}) MERGE(s:IndividualSport{name:$sport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
+          {
+            userId:userId,
+           sport:sport
+          }
+        )
+        .then((result) => {
+          console.log(result);
+        }).catch((err)=>{
+            throw err;
+        })
+    
+        .finally(() => {
+          session.close();
+        }).then(
+          ()=>{
+            res.json(msg="success");
+          }
+        );
+    
+    
+    
+      }
+ 
 });
 
 //Create team
@@ -309,38 +232,7 @@ app.post("/team-search", function (req, res) {
       .finally(() => {
         session.close();
       });
-    // } else {
-    //   session
-    //     .run("MATCH(t:Team{sport: $sport})", teamSearchObj)
-    //     .then((result) => {
-    //       var teams = result.records[0].get(0).properties;
-    //       if (teams != null) {
-    //         obj.team = teams;
-    //         obj.msg = "Team Found";
-    //       } else {
-    //         obj.msg = "Team Not Found";
-    //       }
-    //     })
-    //     .finally(() => {
-    //       session.close();
-    //     });
   }
-
-  //   var foundTeam = dummyTeams.find(
-  //     (team) => team.teamName == teamName && team.sport == sport
-  //   );
-  //   if (foundTeam == null) {
-  //     obj.msg = "No Team Found";
-  //   } else {
-  //     var i;
-  //     for (i = 0; i < foundTeam.players.length; i++) {
-  //       var playerinfo = dummyUsers.find(
-  //         (user) => user.userId == foundTeam.players[i]
-  //       );
-  //       obj.players.push(playerinfo);
-  //     }
-  //     obj.msg = "Team Found";
-  //   }
 });
 
 app.get("/get-nearby-grounds", async (req, res) => {
@@ -401,8 +293,30 @@ app.post("/join-team", async function (req, res) {
     .run(
       "MERGE(u:User {userId:$userId}) MERGE(t:Team{name:$teamName,sports:$sport}) MERGE(u)-[:IS_PLAYER_OF]->(t)",
       obj
-    )
-    .then((result) => {
+    ).then((result) => {
+     console.log(result);
+     res.json({
+       msg:"success"
+     }); 
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      session.close();
+    });
+});
+
+app.get("/team-info",  function (req, res) {
+  var obj = { userId: req.query.userId };
+  const session = driver.session();
+
+   session.run(
+      "MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t",
+      obj
+    ).then((result)=>{
+
+
       if (result.records.length <= 0) {
         res.json({
           hasTeam: false,
@@ -418,29 +332,13 @@ app.post("/join-team", async function (req, res) {
           teams: arr,
         });
       }
-    })
-    .catch((err) => {
+
+    }).catch((err)=>{
       console.log(err);
-    })
-    .finally(() => {
-      session.close();
+    }).finally(()=>{
+      session.close()
     });
-});
-
-app.get("/team-info", async function (req, res) {
-  var obj = { userId: req.query.userId };
-  const session = driver.session();
-
-  try {
-    let result = await session.run(
-      "MATCH(a:User{userId:$userId})-[:IS_PLAYER_OF]->(t:Team) RETURN t",
-      obj
-    );
-    console.log(result);
-    await session.close();
-  } catch (err) {
-    console.log(err);
-  }
+    
 });
 
 //NEARBY TEAMS
