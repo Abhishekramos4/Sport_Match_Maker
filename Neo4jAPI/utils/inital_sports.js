@@ -17,9 +17,12 @@ const setSports = async () => {
     }
 
     try{
+        session = driver.session();
         await session.run('CREATE(s:Sport{name:$chess})',sportObj);
         await session.run('CREATE(s:Sport{name:$carrom})',sportObj);
         await session.run("CREATE(s:Sport{name:$tennis})",sportObj);
+
+        await session.close();
     }catch(err){
         console.log(err);
     }

@@ -12,6 +12,7 @@ const team = require("./Neo4jAPI/Team");
 const ground = require("./Neo4jAPI/Ground");
 const utils = require("./Neo4jAPI/utils/distance_utils");
 const { DateTime } = require("neo4j-driver");
+const sportUtils = require("./Neo4jAPI/utils/inital_sports");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -201,7 +202,7 @@ app.post("/login", async (req, res) => {
       console.log(res);
     })
     .then(() => {
-      utils.setSports();
+      sportUtils.setSports();
     })
     .catch((err) => {
       console.log(err);
