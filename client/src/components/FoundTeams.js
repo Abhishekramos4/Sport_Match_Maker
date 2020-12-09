@@ -14,7 +14,7 @@ CardActions,
 import {makeStyles} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import FoundTeamMap from './FoundTeamMap';
-import axios from 'axios';
+import Loading from './Loading';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,8 +40,10 @@ function FoundTeams(props)
     
     const{nearbyTeams} = props;
 
-//   console.log(nearbyTeams);
+
     const[teams,setTeams] = useState([]);
+    const [isLoading,setIsLoading]=useState(true);
+    
   
     useEffect(()=>{
         
@@ -55,7 +57,9 @@ function FoundTeams(props)
             );
         })];
         setTeams(arr);
-    },[]);
+        setTimeout(()=>{setIsLoading(false);},2000)
+        
+    },[nearbyTeams]);
 
     useEffect(()=>{
         console.log(teams);
@@ -84,8 +88,8 @@ function sendMatchRequest(teamName)
 
     return(
     <div>
-    <AppBar className={classes.appBar}>
-        <Toolbar>
+    <AppBar className={classes.appBar} >
+        <Toolbar >
         <IconButton edge="start" color="inherit" onClick={props.closeFunc} aria-label="close">
       <CloseIcon />
     </IconButton>
@@ -95,25 +99,21 @@ function sendMatchRequest(teamName)
         </Toolbar>
     </AppBar>
     <Grid container>
-        <Grid item md={6}>
-            <FoundTeamMap   longitude={72.869736} latitude={19.113646} teams={nearbyTeams}/>
+        <Grid item md={6} xs={12} sm={12}>
+            <FoundTeamMap   longitude={localStorage.getItem("userLong")} latitude={localStorage.getItem("userLat")} teams={nearbyTeams}/>
         </Grid>
-        <Grid item md={6}>
+        <Grid item md={6} xs={12} sm={12}>
+{isLoading?<Loading/>:
             <List>
-                {/* {
-                    console.log(teams)
-                    
-                    }                   
-                    <ListItem key="ab">
-                        {teams[0].teamName}
-                    </ListItem> */}
-                     {/* teams.map((team,index)=>{
+            {
+            teams.map((team,index)=>{
                         return (
-                            <ListItem key={team.teamName}>
+                            <ListItem key={team.name}>
                                 <Card className={classes.teamCard}>
+                               
                                     <CardContent>
                                         <Typography>
-                                       {team.teamName}
+                                       {team.name}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
@@ -123,9 +123,9 @@ function sendMatchRequest(teamName)
                                                 Request Sent
                                             </Button>
                                         :
-                                        <Button onClick={()=>{
-                                            sendMatchRequest(team.teamName);
-                                        }}>
+                                        <Button variant="outlined" onClick={()=>{
+                                            sendMatchRequest(team.name);
+                                        }} style={{color:"white",backgroundColor:"black"}}>
                                                 Send Request
                                             </Button>
 
@@ -136,9 +136,10 @@ function sendMatchRequest(teamName)
                             </ListItem>
 
                         );
-                    }) */}
-                
+                    })
+            }
             </List>
+}
         </Grid>
     </Grid>
 </div>

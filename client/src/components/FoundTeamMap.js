@@ -7,7 +7,7 @@ function Map(props)
     const mapContainerStyle={
 
         width: "100%",
-        height: "500px",
+        height: "600px",
        
 
     }
@@ -32,12 +32,13 @@ function Map(props)
       'type': 'Feature',
       'properties': {
       'description':
-      '<h5>'+teams[i].teamName+'</h5>',
-      'icon': 'theatre'
+      '<h6>'+teams[i].name+'</h6>'+
+      '<p><b>Sport: </b>'+teams[i].sports+'</p>'  
+      +'<p><b>Captain : </b>'+teams[i].captain+'</p>'
       },
       'geometry': {
       'type': 'Point',
-      'coordinates': [ teams[i].teamLocation.longitude,teams[i].teamLocation.latitude]
+      'coordinates': [ teams[i].longitude,teams[i].latitude]
       }
       })
 
@@ -53,7 +54,7 @@ function Map(props)
         const map = new mapboxgl.Map({
           container: mapContainer.current,
           style: "mapbox://styles/mapbox/streets-v11", 
-          center: [72.869736,19.113646 ],
+          center: [props.longitude, props.latitude],
           zoom: 12
         });
        
@@ -67,6 +68,11 @@ const marker = new mapboxgl.Marker().setLngLat([longitude,latitude]).setPopup(po
 //  console.log(teamPopups);
 map.on("load", () => {
           
+  map.loadImage(
+    'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+    function (error, image) {
+      if (error) throw error;
+      map.addImage('custom-marker', image);
       
           map.addSource('places', {
             'type': 'geojson',
@@ -81,10 +87,11 @@ map.on("load", () => {
             'type': 'symbol',
             'source': 'places',
             'layout': {
-            'icon-image': '{icon}-15',
-            'icon-allow-overlap': true
+            'icon-image': 'custom-marker',
+            'icon-allow-overlap': false
             }
             });
+          });
 
             map.on('click', 'places', function (e) {
               var coordinates = e.features[0].geometry.coordinates.slice();
@@ -116,7 +123,7 @@ map.on("load", () => {
       };
   
       if (!map) initializeMap({ setMap, mapContainer });
-    }, [map]);
+    }, [map,teamPopups,teams]);
   
     return <div ref={el => (mapContainer.current = el)} style={mapContainerStyle} />;
 

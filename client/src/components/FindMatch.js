@@ -211,9 +211,9 @@ const[Volleyball,setVolleyball]=useState([]);
     //Find Match Captain
     function handleMatchFindCaptain()
     {
-    
-      // axios.post
-      console.log(matchFormCaptain);
+      
+     
+      // console.log(matchFormCaptain);
 
       if(matchFormCaptain.type=="individual")
       {
@@ -221,33 +221,25 @@ const[Volleyball,setVolleyball]=useState([]);
       }
      else if(matchFormCaptain.type=="team")
      {
+      var data={
+        captain:localStorage.getItem("userId"),
+        teamName:matchFormCaptain.team,
+        sport:matchFormCaptain.sport,
+        latitude:localStorage.getItem("userLat"),
+        longitude:localStorage.getItem("userLong")
+      }
+      axios.post("http://localhost:5000/get-nearby-teams",data).
+      then((res)=>{
+        console.log(res);
+        setFounded(res.data.teams);
 
-      console.log("Request to nearby teams")
+      }).catch((err)=>{
+        console.log(err);
+      })
+     
 
      }
-     
-      
-      
-      var teams=[{
-        teamName:"Barcelona",
-        sport:"Football",
-        captain:"sr4",
-        teamLocation:{
-          longitude:72.831757,
-          latitude:19.116541
-        }
-      },{
-        teamName:"Juventus",
-        sport:"Football",
-        captain:"cr7",
-        teamLocation:{
-          longitude:72.861076,
-          latitude:19.112104
-        }
-    
-      }];
-    
-      setFounded(teams);
+         
       handleDialogOpen();
     
     
@@ -300,9 +292,11 @@ return (
         onChange={handleOnChangeCaptain}
         value={matchFormCaptain.sport}
         >
-          <MenuItem value="Chess">Chess</MenuItem>
-          <MenuItem value="Badminton">Badminton</MenuItem>
-          <MenuItem value="VolleyBall">VolleyBall</MenuItem>
+          <MenuItem value="Chess" key="Chess">Chess</MenuItem>
+          <MenuItem value="Badminton" key="Badminton" >Badminton</MenuItem>
+          <MenuItem value="Tennis"  key="Tennis">Tennis</MenuItem>
+          <MenuItem value="Pool" key="Pool">Pool</MenuItem>
+          
         </Select>
       </FormControl> :
       <FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
@@ -313,9 +307,9 @@ return (
         onChange={handleOnChangeCaptain}
         value={matchFormCaptain.sport}
         >
-          <MenuItem value="Football">Football</MenuItem>
-          <MenuItem value="Cricket">Cricket</MenuItem>
-          <MenuItem value="VolleyBall">VolleyBall</MenuItem>
+          <MenuItem value="Football" key="Football">Football</MenuItem>
+          <MenuItem value="Cricket"   key="Cricket">Cricket</MenuItem>
+          <MenuItem value="Volleyball" key="Volleyball">Volleyball</MenuItem>
         </Select>
       </FormControl>
 }
@@ -336,7 +330,7 @@ return (
           ?
           Football.map((item)=>{
             return(
-              <MenuItem value={item}>{item}</MenuItem>
+              <MenuItem value={item} key={item}>{item}</MenuItem>
             );
           })
           :null
@@ -347,7 +341,7 @@ return (
           ?
           Cricket.map((item)=>{
             return(
-              <MenuItem value={item}>{item}</MenuItem>
+              <MenuItem value={item} key={item}>{item}</MenuItem>
             );
           })
           :null
@@ -357,7 +351,7 @@ return (
           ?
           Volleyball.map((item)=>{
             return(
-              <MenuItem value={item}>{item}</MenuItem>
+              <MenuItem value={item} key={item}>{item}</MenuItem>
             );
           })
           :null
@@ -447,9 +441,10 @@ return (
           label="Sport"
         onChange={handleOnChangePlayer}
         >
-          <MenuItem value="Chess">Chess</MenuItem>
-          <MenuItem value="Badminton">Badminton</MenuItem>
-          <MenuItem value="VolleyBall">VolleyBall</MenuItem>
+          <MenuItem value="Chess" key="Chess">Chess</MenuItem>
+          <MenuItem value="Badminton" key="Badminton" >Badminton</MenuItem>
+          <MenuItem value="Tennis"  key="Tennis">Tennis</MenuItem>
+          <MenuItem value="Pool" key="Pool">Pool</MenuItem>
         </Select>
       </FormControl> 
 

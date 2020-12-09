@@ -141,8 +141,6 @@ app.post("/register", async (req, res) => {
     contact: req.body.contact,
   };
 
-  // dummyUsers.push(registerObj);
-  // console.log(dummyUsers);
   var result = await user.createUser(registerObj);
   console.log(result);
 
@@ -152,7 +150,7 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  //Dummy Users :
+
 
   var loginObj = {
     userId: req.body.userId,
@@ -448,6 +446,8 @@ app.get("/team-info", async function (req, res) {
 
 app.post("/get-nearby-teams", async (req, res) => {
   let teamInfo = {
+    captain:req.body.captain,
+    teamName:req.body.team,
     sport: req.body.sport,
     latitude: parseFloat(req.body.latitude),
     longitude: parseFloat(req.body.longitude),
@@ -457,7 +457,7 @@ app.post("/get-nearby-teams", async (req, res) => {
   let nearbyTeams = [];
   try {
     let result = await session.run(
-      "MATCH (t:Team{sports:$sport}) RETURN t",
+      "MATCH(t:Team{sports:$sport}) WHERE NOT (:User{userId:$captain})-[:IS_CAPTAIN_OF]->(t) RETURN t",
       teamInfo
     );
 
@@ -627,5 +627,10 @@ app.post("/schedule-match", async (req, res) => {
   }
 });
 
+
+app.listen(5000,function()
+{
+console.log("Server running on port 5000");
+});
 
 
