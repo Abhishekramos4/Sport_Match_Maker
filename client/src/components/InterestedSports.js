@@ -57,8 +57,8 @@ const[boolInterest,setBoolInterest]=useState({
 'Volleyball':false,
 'Tennis':false,
 'Chess':false,
+'Pool':false,
 'Badminton':false,
-'Pool':false
 
 });
 const[openAlert,setOpenAlert]=useState(false);
@@ -138,13 +138,14 @@ const handleAddRemove= (sport)=>
    }));
    setAlertState([x,sport]);
    setOpenAlert(true);
-   console.log(boolInterest);
+
   
 
 }
 
 function handleApply()
 {
+   console.log(boolInterest);
    var dataArr=[];
    for(let[key,value] of  Object.entries(boolInterest))
    {
@@ -326,9 +327,9 @@ return(
         <Typography variant='h5' component='h2'>Pool</Typography>
     </CardContent>
     <CardActions>{
-        boolInterest['Pool']==true?
+        boolInterest['Pool']!==false?
         <Button variant='contained' onClick={()=>{handleAddRemove('Pool');}} className={classes.buttonStyleRemove}>Remove</Button>
-        :<Button variant='contained' onClick={()=>{handleAddRemove('Pool');}}  className={classes.buttonStyleAdd}>Add</Button>
+        :<Button variant='contained' onClick={()=>{handleAddRemove('Pool');}} className={classes.buttonStyleAdd}>Add</Button>
     }</CardActions>
 </Card>
 </Grid>

@@ -13,6 +13,7 @@ const ground = require("./Neo4jAPI/Ground");
 const utils = require("./Neo4jAPI/utils/distance_utils");
 const { DateTime } = require("neo4j-driver");
 const sportUtils = require("./Neo4jAPI/utils/inital_sports");
+const { session } = require("./Neo4jAPI/config");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -87,7 +88,7 @@ app.post("/login", async (req, res) => {
         }
       }
 
-      // return (response);
+      
     })
     .then(() => {
       ground.addGround();
@@ -95,9 +96,9 @@ app.post("/login", async (req, res) => {
     .then((res) => {
       console.log(res);
     })
-    .then(() => {
-      sportUtils.setSports();
-    })
+    // .then(() => {
+    //   sportUtils.setSports();
+    // })
     .catch((err) => {
       console.log(err);
     })
@@ -106,7 +107,7 @@ app.post("/login", async (req, res) => {
     });
 });
 
-app.get("/get-interested-sports", async (req, res) => {
+app.get("/get-interested-sports",  (req, res) => {
   const userId = {
     userId: req.query.userId,
   };
@@ -114,7 +115,7 @@ app.get("/get-interested-sports", async (req, res) => {
   
     let session = driver.session();
      session.run(
-      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]-> (s:IndividualSport) RETURN s",
+      "MATCH(u:User{userId: $userId})-[:IS_INTERESTED_IN]->(s:IndividualSport) RETURN s",
       userId
     ).then((result)=>{
         console.log(result);
@@ -141,37 +142,57 @@ app.post("/set-interested-sports",  (req, res) => {
  
    var arr=req.body.arr;
   var userId=req.body.userId;
+console.log(arr);
+  var session1=driver.session();
+ 
+  session1.run("MATCH(u:User{userId:$userId})-[r:IS_INTERESTED_IN]->(n) DELETE r",{userId:userId}).then((result)=>{
+    console.log(result);
+  }).catch(err=>{
+    console.log(err);
+  }).then(()=>{
+  
+    let session2 = driver.session();
 
-  var session;
-  for(var i =0;i<arr.length;i++)
-      {  
-        var sport=arr[i];
-        session=driver.session();
-        session
-        .run(
-          "MERGE(u:User{userId:$userId}) MERGE(s:IndividualSport{name:$sport}) MERGE(u)-[:IS_INTERESTED_IN]->(s)",
-          {
-            userId:userId,
-           sport:sport
-          }
-        )
-        .then((result) => {
-          console.log(result);
-        }).catch((err)=>{
-            throw err;
-        })
-    
-        .finally(() => {
-          session.close();
-        }).then(
-          ()=>{
-            res.json(msg="success");
-          }
-        );
-    
-    
-    
+   var query = "MERGE(u:User{userId:$userId}) ";
+
+    for(var i =0;i<arr.length;i++)
+    {  
+      if(arr[i]==="Chess")
+      {
+        query+="MERGE(t1:IndividualSport{name:'Chess'}) MERGE(u)-[:IS_INTERESTED_IN]->(t1) ";
       }
+      if(arr[i]==="Tennis")
+      {
+        query+="MERGE(t2:IndividualSport{name:'Tennis'}) MERGE(u)-[:IS_INTERESTED_IN]->(t2) ";
+      }
+      if(arr[i]==="Badminton")
+      {
+        query+="MERGE(t3:IndividualSport{name:'Badminton'}) MERGE(u)-[:IS_INTERESTED_IN]->(t3) ";
+      }
+      if(arr[i]==="Pool")
+      {
+        query+="MERGE(t4:IndividualSport{name:'Pool'}) MERGE(u)-[:IS_INTERESTED_IN]->(t4) ";
+      }
+
+
+      }
+      console.log(query);
+
+      session2.run(query,{userId:userId}).then((res)=>{
+        console.log("inner success");
+      }).catch(err=>{console.log(err);}).finally(()=>{
+        session2.close();
+      })
+  
+  
+  
+    }).finally(()=>{
+    session1.close();
+    res.json({
+      msg:"success"
+    })
+  })
+
  
 });
 
