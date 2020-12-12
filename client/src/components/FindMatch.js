@@ -541,7 +541,7 @@ return (
        
 
  <Dialog fullScreen open={openDialog} onClose={handleDialogClose} TransitionComponent={Transition} >
-       <FoundTeams nearbyTeams= {founded} matchReq={matchReq} closeFunc={handleDialogClose} />
+       <FoundTeams nearbyTeams= {founded} matchReq={matchReq} isTeam={matchReq.type=="individual"?false:true}   closeFunc={handleDialogClose} />
    </Dialog>
 
 

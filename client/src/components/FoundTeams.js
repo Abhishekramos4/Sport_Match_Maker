@@ -16,6 +16,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import FoundTeamMap from './FoundTeamMap';
 import Loading from './Loading';
 import axios from 'axios';
+import { isMatch } from 'lodash';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +40,7 @@ function FoundTeams(props)
     const classes = useStyles();
    
     
-    const{matchReq,nearbyTeams} = props;
+    const{matchReq,nearbyTeams,isTeam} = props;
 
 
     const[teams,setTeams] = useState([]);
@@ -73,8 +74,9 @@ function sendMatchRequest(teamName)
        
     console.log(teamName);
     console.log(matchReq);
-    alert("hello")
+    alert("Request sent to"+teamName);
  var  obj={
+     type:matchReq.type,
     team:matchReq.team,
     opponent:teamName,
     date:matchReq.date,
@@ -113,17 +115,73 @@ function sendMatchRequest(teamName)
       <CloseIcon />
     </IconButton>
     <Typography variant="h6" className={classes.title}>
-     Nearby Teams
+     {
+         isTeam? "Nearby Teams" :"Nearby Individuals" 
+     }
+    
     </Typography>
         </Toolbar>
     </AppBar>
     <Grid container>
         <Grid item md={6} xs={12} sm={12}>
-            <FoundTeamMap   longitude={localStorage.getItem("userLong")} latitude={localStorage.getItem("userLat")} teams={nearbyTeams}/>
+            <FoundTeamMap   longitude={localStorage.getItem("userLong")} latitude={localStorage.getItem("userLat")} isTeam={isTeam} teams={nearbyTeams}/>
         </Grid>
         <Grid item md={6} xs={12} sm={12}>
 {isLoading?<Loading/>:
-            <List>
+            <div>
+            {
+                matchReq.type=="individual"? 
+                
+                <List>
+                    {
+                        nearbyTeams.map((user,index)=>{
+                            return (
+                                <ListItem key={user.userId} >
+                                <Card className={classes.teamCard}>
+                               
+                                    <CardContent>
+                                        <Typography>
+                                       {user.fname+" "+user.lname}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                    <Grid container>
+                                    <Grid item md={9} xs={false}>
+
+
+                                    </Grid>
+
+                                    <Grid item md={3}>
+
+                                    
+                                       
+                                        <Button variant="outlined" onClick={()=>{sendMatchRequest(user.userId);}} style={{color:"white",backgroundColor:"black"}}>
+                                                Send Request
+                                        </Button>
+
+                                   
+                                    </Grid>
+                                   
+                                    </Grid>
+                                    
+                                            
+                                    </CardActions>
+                                </Card>
+                            </ListItem>
+
+
+                            );
+
+
+
+                        })
+                       
+                    }
+                </List>
+                
+                :
+
+                <List>
             {
             nearbyTeams.map((team,index)=>{
                         return (
@@ -164,6 +222,11 @@ function sendMatchRequest(teamName)
                     })
             }
             </List>
+            }
+
+
+            </div>
+           
 }
         </Grid>
     </Grid>

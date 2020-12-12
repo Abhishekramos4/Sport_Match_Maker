@@ -16,7 +16,7 @@ function Map(props)
   
     const [map, setMap] = useState(null);
     const mapContainer = useRef(null);
-    const{latitude,longitude,teams}=props
+    const{latitude,longitude,teams,isTeam}=props
   
 
 
@@ -28,6 +28,8 @@ function Map(props)
 
    for(var i=0;i<teams.length;i++)
    {
+
+    isTeam?
      teamPopups.push({
       'type': 'Feature',
       'properties': {
@@ -41,6 +43,21 @@ function Map(props)
       'coordinates': [ teams[i].longitude,teams[i].latitude]
       }
       })
+      :
+      teamPopups.push({
+        'type': 'Feature',
+        'properties': {
+        'description':
+        '<h6>'+teams[i].fname+" "+teams[i].lname+'</h6>'+
+        '<p><b>UserId: </b>'+teams[i].userId+'</p>'  
+        +'<p><b>Contact : </b>'+teams[i].contact+'</p>'
+        },
+        'geometry': {
+        'type': 'Point',
+        'coordinates': [ teams[i].longitude,teams[i].latitude]
+        }
+        })
+
 
    }
 
