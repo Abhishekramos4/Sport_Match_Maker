@@ -2,15 +2,16 @@ import React,{useState,useEffect} from 'react';
 import {Menu,
     MenuItem,
     IconButton,
-    Divider
+    Divider,Typography, Card,CardContent,CardActions,Grid
    } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import axios from 'axios';
+
 function Notification()
 {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [ requests,requestsState] = useState({
+  const [ requestData,setrequestData] = useState([]);
 
-  });
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -21,26 +22,36 @@ function Notification()
   
   useEffect(
         ()=>{
-            
-           //axios.post
-           var requests=[
-             {type:"individual",
-             sport:"chess",
-             userid:"ab123",
-             date:"",
-             time:""},
-            {
-              type:"team",
-              sport:"Football",
-              team:"Real Madrid",
-              date:"",
-              time:""
-            }
-            ];
 
-           
-        
+          axios.get("http://localhost:5000/captain-teams-search",{
+            params:{
+             userId:localStorage.getItem("userId") 
+            }
+          }).then((res)=>{
+
+            axios.get("http://localhost:5000/get-request",{params:{
+            userId:localStorage.getItem("userId")
+            ,teamArr:[...res.data.Football,...res.data.Cricket,...res.data.Volleyball]
+          }}).then((res)=>{
+              console.log(res.data);
+              setrequestData([...res.data.requests]);
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+
+
+            // console.log(res);
+
+
+          }).catch((err)=>{
+
+            console.log(err);
+
+          });
+          
         }
+        ,[]
     )
 
 
@@ -58,9 +69,27 @@ function Notification()
       >
       
         {
-            <MenuItem>
-              
+          requestData.length===0?
+          <MenuItem>
+              <Typography>You have no team requests</Typography>
             </MenuItem>
+          :
+            requestData.map((item)=>{
+              return(
+                <MenuItem style={{minWidth:"550px"}}>
+                    <Grid container>
+                      <Grid item md={6}>From:<Typography>{item.sender}</Typography></Grid>
+                      <Grid item md={6}>For:<Typography>{item.receiver}</Typography></Grid>
+
+                    </Grid>
+                     
+    
+
+                </MenuItem>
+              );
+             
+            })
+            
 
         }
         

@@ -412,49 +412,77 @@ app.post("/get-nearby-teams", async (req, res) => {
 
 //NEARBY USERS
 
-app.post("/nearby-individuals", async (req, res) => {
+app.post("/nearby-individuals", (req, res) => {
   let userData = {
     userId: req.body.userId,
+    sport:req.body.sport,
     latitude: parseFloat(req.body.latitude),
     longitude: parseFloat(req.body.longitude),
   };
 
+  console.log(userData);
   let session = driver.session();
-  let nearbyUsers = [];
-  try {
-    let result = await session.run(
-      "MATCH(u:User) WHERE u.userId <> $userId RETURN u",
+ 
+    session.run(
+      "MATCH(u:User)-[:IS_INTERESTED_IN]->(s:IndividualSport{name:$sport}) WHERE u.userId <> $userId RETURN u",
       userData
-    );
-
-    for (let i = 0; i < result.records.length; i++) {
-      let userLatitude = result.records[i].get(0).properties.latitude;
-      let userLongitude = result.records[i].get(0).properties.longitude;
-
-      let dist = utils.getDistanceFromLatLonInKm(
-        userData.latitude,
-        userData.longitude,
-        userLatitude,
-        userLongitude
-      );
-
-      if (dist < 5) {
-        nearbyUsers.push(result.records[i].get(0).properties);
+    ).then((result)=>{
+      console.log(result.records.length);
+      if (result.records.length <= 0) {
+        res.json({ msg: "No individuals found" });
       }
-    }
-    await session.close();
+      else{
+        var nearbyUsers=[];
 
-    res.json({ nearbyUsers: nearbyUsers });
-  } catch (err) {
-    console.log(err);
+        for (var i = 0; i < result.records.length; i++) {
+
+
+         
+
+          let userLatitude = result.records[i].get(0).properties.latitude;
+          let userLongitude = result.records[i].get(0).properties.longitude;
+          
+          
+
+          let dist = utils.getDistanceFromLatLonInKm(
+            userData.latitude,
+            userData.longitude,
+            userLatitude,
+            userLongitude
+          );
+    
+          if (dist < 5) {
+            nearbyUsers.push(result.records[i].get(0).properties);
+          }
+         
+        
+        }
+        res.json({ nearbyUsers: nearbyUsers });
+
+
+      }
+
+    }).catch((err)=>{
+
+    }).finally(()=>{
+      session.close();
+    });
+
+    
+   
+
+    
+   
+   
   }
-});
+);
 
 app.get("/captain-teams-search",function(req,res)
 {
 
   var obj={
     userId:req.query.userId,
+
   };
 
 const session = driver.session();
@@ -495,7 +523,7 @@ session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',
           isCaptain:true,
           Football:FootArr,
           Cricket:CrickArr,
-          VolleyBall:VollArr
+          Volleyball:VollArr
 
         }
       );
@@ -520,6 +548,102 @@ app.get("/profile", auth, function (req, res) {
     msg: "This is your authorized profile",
   });
 });
+
+//REQUEST
+
+app.post("/send-request",function(req,res)
+{
+
+  var obj={
+    team:req.body.team,
+    opponent:req.body.opponent,
+    sport:req.body.sport,
+    date:req.body.date,
+    time:req.body.time,
+  }
+
+let session = driver.session();
+
+session.run("MERGE(n:Request{date:date($date),sender:$team,receiver:$opponent,sports:$sport,time:time($time)}) RETURN n",obj)
+.then((result)=>{
+console.log(result);
+res.json({
+  msg:"success"
+})
+}).catch((err)=>{
+console.log(err)
+})
+.finally(()=>{
+session.close();
+});
+
+  console.log(obj);
+
+}
+
+
+);
+
+app.get("/get-request",function(req,res)
+{
+
+var obj={
+  userId:req.query.userId,
+ 
+}
+
+var teamArr=req.query.teamArr
+inString="[";
+for(var i=0;i<teamArr.length;i++)
+{
+    inString+="'"+teamArr[i];
+    if(i==teamArr.length-1)
+    {
+      inString+="']";
+    }
+    else{
+      inString+="',"
+    }
+
+}
+
+console.log(inString);
+
+let session = driver.session();
+
+session.run("MATCH(r:Request) WHERE r.receiver IN "+inString+" RETURN r").then((result)=>{
+
+  if(result.records.length<=0)
+  {
+    res.json({
+      isRequests:false,
+      requests:[]
+    });
+  }
+  else{
+
+    var requests=[]
+    for(let i=0;i<result.records.length;i++)
+    {
+      requests.push(result.records[i].get(0).properties);
+    }
+
+    res.json({
+
+isRequests:true,
+requests:requests
+    });
+
+  }
+
+})
+.catch((err)=>{
+console.log(err);
+}).finally(()=>{session.close()});
+
+
+});
+
 
 //MATCH
 

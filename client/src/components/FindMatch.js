@@ -62,6 +62,7 @@ const [isCaptain,setIsCaptain]=useState(true);
 const[Football,setFootball]=useState([]);
 const[Cricket,setCricket]=useState([]);
 const[Volleyball,setVolleyball]=useState([]);
+const[matchReq,setMatchReq]=useState({});
 
     useEffect(()=>{
 
@@ -154,8 +155,20 @@ const[Volleyball,setVolleyball]=useState([]);
     {
 
       console.log(matchFormPlayer);
+      setMatchReq(matchFormPlayer);
       console.log("Request to Nearby Players");
-     // axios.post()
+     var data = {
+        userId:localStorage.getItem("userId"),
+        sport:matchFormPlayer.sport,
+        latitude:localStorage.getItem("userLat"),
+        longitude:localStorage.getItem("userLong")
+     }
+      axios.post("http://localhost:5000/nearby-individuals",data)
+      .then((res)=>{
+        console.log(res);
+      }).catch(err=>{
+        console.log(err);
+      })
 
 
     }
@@ -213,11 +226,25 @@ const[Volleyball,setVolleyball]=useState([]);
     {
       
      
-      // console.log(matchFormCaptain);
-
+      console.log(matchFormCaptain);
+        setMatchReq(matchFormCaptain);
       if(matchFormCaptain.type=="individual")
       {
         console.log("Request to nearby individual");
+        var data = {
+          userId:localStorage.getItem("userId"),
+          sport:matchFormCaptain.sport,
+          latitude:localStorage.getItem("userLat"),
+          longitude:localStorage.getItem("userLong")
+
+       }
+        axios.post("http://localhost:5000/nearby-individuals",data)
+        .then((res)=>{
+          console.log(res);
+          setFounded(res.data.nearbyUsers);
+        }).catch(err=>{
+          console.log(err);
+        })
       }
      else if(matchFormCaptain.type=="team")
      {
@@ -514,7 +541,7 @@ return (
        
 
  <Dialog fullScreen open={openDialog} onClose={handleDialogClose} TransitionComponent={Transition} >
-       <FoundTeams nearbyTeams= {founded} closeFunc={handleDialogClose} />
+       <FoundTeams nearbyTeams= {founded} matchReq={matchReq} closeFunc={handleDialogClose} />
    </Dialog>
 
 

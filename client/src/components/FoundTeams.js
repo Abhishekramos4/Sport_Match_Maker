@@ -15,6 +15,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import FoundTeamMap from './FoundTeamMap';
 import Loading from './Loading';
+import axios from 'axios';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +39,7 @@ function FoundTeams(props)
     const classes = useStyles();
    
     
-    const{nearbyTeams} = props;
+    const{matchReq,nearbyTeams} = props;
 
 
     const[teams,setTeams] = useState([]);
@@ -69,7 +70,25 @@ function FoundTeams(props)
 
 function sendMatchRequest(teamName)
 {
-        // axios.post()
+       
+    console.log(teamName);
+    console.log(matchReq);
+    alert("hello")
+ var  obj={
+    team:matchReq.team,
+    opponent:teamName,
+    date:matchReq.date,
+    time:matchReq.time,
+    sport:matchReq.sport
+    }
+
+    axios.post("http://localhost:5000/send-request",obj).then((res)=>{
+        console.log(res.data);
+    }).catch((err)=>{
+            console.log(err)
+    });
+    
+    // // axios.post()
     //     console.log(teamName);
     //     console.log(teams);
     //    var i = teams.findIndex((obj)=>{
@@ -108,7 +127,7 @@ function sendMatchRequest(teamName)
             {
             nearbyTeams.map((team,index)=>{
                         return (
-                            <ListItem key={team.name}>
+                            <ListItem key={team.name} team={team.name}>
                                 <Card className={classes.teamCard}>
                                
                                     <CardContent>
@@ -117,19 +136,25 @@ function sendMatchRequest(teamName)
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
-                                    {
-                                        team.sent?
-                                        <Button >
-                                                Request Sent
-                                            </Button>
-                                        :
-                                        <Button variant="outlined" onClick={()=>{
-                                            sendMatchRequest(team.name);
-                                        }} style={{color:"white",backgroundColor:"black"}}>
-                                                Send Request
-                                            </Button>
+                                    <Grid container>
+                                    <Grid item md={9} xs={false}>
 
-                                    }
+
+                                    </Grid>
+
+                                    <Grid item md={3}>
+
+                                    
+                                       
+                                        <Button variant="outlined" onClick={()=>{sendMatchRequest(team.name);}} style={{color:"white",backgroundColor:"black"}}>
+                                                Send Request
+                                        </Button>
+
+                                   
+                                    </Grid>
+                                   
+                                    </Grid>
+                                    
                                             
                                     </CardActions>
                                 </Card>
