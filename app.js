@@ -555,16 +555,18 @@ app.post("/send-request",function(req,res)
 {
 
   var obj={
-    team:req.body.team,
+
+    sender:req.body.team,
     opponent:req.body.opponent,
     sport:req.body.sport,
     date:req.body.date,
     time:req.body.time,
+    type:req.body.type
   }
 
 let session = driver.session();
 
-session.run("MERGE(n:Request{date:date($date),sender:$team,receiver:$opponent,sports:$sport,time:time($time)}) RETURN n",obj)
+session.run("MERGE(n:Request{date:date($date),sender:$sender,receiver:$opponent,sports:$sport,time:time($time),type:$type}) RETURN n",obj)
 .then((result)=>{
 console.log(result);
 res.json({
@@ -583,6 +585,22 @@ session.close();
 
 
 );
+
+// app.get("/get-request-individual")
+// {
+
+//   var obj={
+//     userId:req.query.userId,
+   
+//   }
+
+  
+
+// }
+
+
+
+
 
 app.get("/get-request",function(req,res)
 {
@@ -609,37 +627,56 @@ for(var i=0;i<teamArr.length;i++)
 
 console.log(inString);
 
-let session = driver.session();
+let session1 = driver.session();
 
-session.run("MATCH(r:Request) WHERE r.receiver IN "+inString+" RETURN r").then((result)=>{
+session1.run("MATCH(r:Request) WHERE r.receiver IN "+inString+" RETURN r,id(r)").then(
+  
+(resultout)=>{
 
-  if(result.records.length<=0)
-  {
-    res.json({
-      isRequests:false,
-      requests:[]
-    });
-  }
-  else{
-
-    var requests=[]
-    for(let i=0;i<result.records.length;i++)
+var requests=[] ;
+if(resultout.records.length>0)
+ {
+    for(let i=0;i<resultout.records.length;i++)
     {
-      requests.push(result.records[i].get(0).properties);
+      requests.push({...resultout.records[i].get(0).properties,id:resultout.records[i].get(1).low});
+    }
+  }
+ 
+  let session2 =driver.session();
+   
+  session2.run("MATCH(r:Request{receiver:$userId,type:'individual'}) RETURN r,id(r)",obj)
+  .then((resultin)=>{
+    // console.log(resultin.records);
+    if(resultin.records.length>0)
+    {
+      // console.log(resultin.records[0].get(0))
+      for(var j=0;j<resultin.records.length;j++)
+      {
+        requests.push({...resultin.records[j].get(0).properties,id:resultin.records[j].get(1).low});
+      }
+
     }
 
-    res.json({
+   res.json({
+     requests:requests
+   });
 
-isRequests:true,
-requests:requests
-    });
 
-  }
+
+  }).catch((err)=>{
+      console.log(err);
+  }).
+  finally(()=>
+  {
+    session2.close();
+  });
+
+  
 
 })
 .catch((err)=>{
 console.log(err);
-}).finally(()=>{session.close()});
+}).finally(()=>{session1.close()});
 
 
 });
@@ -647,29 +684,100 @@ console.log(err);
 
 //MATCH
 
-app.post("/schedule-match", async (req, res) => {
-  let match = {
-    opponent: req.body.opponent,
-    host: req.body.host,
-    date: DateTime(req.body.date),
-    time: req.body.time,
-  };
 
-  let session = driver.session();
-  try {
-    let result = await session.run(
-      "CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m",
-      match
-    );
+app.post("/request-accept",function (req,res) {
+let session1 = driver.session();
 
-    console.log(result);
-    await session.close();
+var obj={
+id:req.body.id,
+sender:req.body.sender,
+receiver:req.body.receiver,
+  time:req.body.time,
+  date:req.body.date,
+  type:req.body.type,
+  sports:req.body.sports
+}
 
-    res.json({ msg: "Match has been scheduled" });
-  } catch (err) {
-    console.log(err);
-  }
+session1.run("CREATE(m:ScheduledMatch{type:$type,sports:$sports,time:time($time),date:date($date),sender:$sender,receiver:$receiver}) RETURN m",obj)
+.then((resultout)=>{
+
+let session2=driver.session();
+
+session2.run("MATCH(n) WHERE id(n)=$id DELETE n",obj)
+.then((resultin)=>{
+
+})
+.catch(err=>{
+  console.log(err);
+})
+.finally(()=>
+{
+session2.close();
+}
+);
+
+
+})
+.catch((err)=>{
+  console.log(err);
+})
+.finally(()=>{
+
+  session1.close();
 });
+
+
+});
+
+app.post("/request-decline",function (req,res) {
+  
+  let session = driver.session();
+var obj={
+id:req.body.id,
+}
+  session.run("MATCH(n) WHERE id(n)=$id DELETE n",obj)
+  .then((result)=>{
+  res.json({
+    msg:"success"
+  })
+  })
+  .catch((err)=>{
+    console.log(err);
+  })
+  .finally(()=>{
+  
+    session.close();
+  })
+  
+
+
+});
+
+
+
+// app.get("/schedule-match", async (req, res) => {
+//   let match = {
+//     opponent: req.body.opponent,
+//     host: req.body.host,
+//     date: DateTime(req.body.date),
+//     time: req.body.time,
+//   };
+
+//   let session = driver.session();
+//   try {
+//     let result = await session.run(
+//       "CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m",
+//       match
+//     );
+
+//     console.log(result);
+//     await session.close();
+
+//     res.json({ msg: "Match has been scheduled" });
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
 
 app.listen(5000,function()

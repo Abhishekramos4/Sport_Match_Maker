@@ -155,7 +155,11 @@ const[matchReq,setMatchReq]=useState({});
     {
 
       console.log(matchFormPlayer);
-      setMatchReq(matchFormPlayer);
+      var form={
+        ...matchFormPlayer,
+        team:localStorage.getItem("userId")
+      }
+      setMatchReq(form);
       console.log("Request to Nearby Players");
      var data = {
         userId:localStorage.getItem("userId"),
@@ -227,7 +231,12 @@ const[matchReq,setMatchReq]=useState({});
       
      
       console.log(matchFormCaptain);
-        setMatchReq(matchFormCaptain);
+      var form={
+        ...matchFormCaptain,
+        team:localStorage.getItem("userId")
+      }
+
+        setMatchReq(form);
       if(matchFormCaptain.type=="individual")
       {
         console.log("Request to nearby individual");

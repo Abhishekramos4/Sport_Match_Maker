@@ -10,13 +10,13 @@ import {
 } from '@material-ui/core';
 import NavbarProfile from './NavbarProfile'
 import {makeStyles} from '@material-ui/core/styles';
-import CricketCard from '../images/CricketCard.jpg';
-import FootballCard from '../images/FootballCard.jpg';
-import VolleyballCard from '../images/VolleyballCard.jpg';
-import ChessCard from '../images/ChessCard.jpg';
-import TennisCard from '../images/TennisCard.jpg';
-import BadmintonCard from '../images/BadmintonCard.jpg';
-import PoolCard from '../images/PoolCard.jpg';
+// import CricketCard from '../images/CricketCard.jpg';
+// import FootballCard from '../images/FootballCard.jpg';
+// import VolleyballCard from '../images/VolleyballCard.jpg';
+// import ChessCard from '../images/ChessCard.jpg';
+// import TennisCard from '../images/TennisCard.jpg';
+// import BadmintonCard from '../images/BadmintonCard.jpg';
+// import PoolCard from '../images/PoolCard.jpg';
 
 import axios from 'axios';
 

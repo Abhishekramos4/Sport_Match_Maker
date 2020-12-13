@@ -2,15 +2,20 @@ import React,{useState,useEffect} from 'react';
 import {Menu,
     MenuItem,
     IconButton,
+    Button,
+    Snackbar,
     Divider,Typography, Card,CardContent,CardActions,Grid
    } from '@material-ui/core';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import  MuiAlert from '@material-ui/lab/Alert';
 import axios from 'axios';
 
 function Notification()
 {
   const [anchorEl, setAnchorEl] = useState(null);
   const [ requestData,setrequestData] = useState([]);
+  const[acceptAlert,setAcceptAlert] = useState(false);
+  const[declineAlert,setDeclineAlert] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -20,6 +25,23 @@ function Notification()
     setAnchorEl(null);
   };  
   
+
+function handleAcceptAlertClose(event,reason) {
+  if (reason === "clickaway") {
+    return;
+  }
+
+  setAcceptAlert(false);
+}
+
+function handleDeclineAlertClose(event,reason) {
+  if (reason === "clickaway") {
+    return;
+  }
+  setDeclineAlert(false);
+
+}
+
   useEffect(
         ()=>{
 
@@ -54,6 +76,64 @@ function Notification()
         ,[]
     )
 
+function handleAccept(request)
+{
+
+  var newRequests=requestData.filter((item)=>{
+
+    return(item.id!=request.id);
+  
+  });
+  
+  setrequestData(newRequests);
+  setAcceptAlert(true);
+
+axios.post("http://localhost:5000/request-accept",{
+...request,
+time:request.time.hour.low+":"+request.time.minute.low,
+date:  request.date.year.low+"-"+request.date.month.low+"-"+request.date.day.low
+
+})
+.then((res)=>{
+console.log(res);
+  
+}).
+catch(err=>{
+  console.log(err);
+});
+console.log(request);
+}
+
+
+function handleDecline(request)
+{
+
+  var newRequests=requestData.filter((item)=>{
+
+    return(item.id!=request.id);
+  
+  });
+  
+  setrequestData(newRequests);
+  setDeclineAlert(true);
+axios.post("http://localhost:5000/request-decline",request)
+.then((res)=>{
+
+console.log(res);
+
+})
+.catch(err=>{
+  console.log(err);
+});
+
+console.log(request);
+
+
+}
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}  
 
     return (<div>
     <IconButton   aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{color:"white",position:"absolute",right:"6%",top:"4%"}}>
@@ -71,17 +151,37 @@ function Notification()
         {
           requestData.length===0?
           <MenuItem>
-              <Typography>You have no team requests</Typography>
+              <Typography>You have no requests</Typography>
             </MenuItem>
           :
-            requestData.map((item)=>{
+            requestData.map((item,index)=>{
               return(
-                <MenuItem style={{minWidth:"550px"}}>
-                    <Grid container>
-                      <Grid item md={6}>From:<Typography>{item.sender}</Typography></Grid>
-                      <Grid item md={6}>For:<Typography>{item.receiver}</Typography></Grid>
+                <MenuItem key={item.id}>
+                    <Card >
+                      <CardContent style={{maxWidth:"450px"}}>
+                      <Grid container>
+                      <Grid item md={6}><Typography>From: {item.sender}</Typography></Grid>
+                      <Grid item md={6}><Typography>To: {item.receiver}</Typography></Grid>
+                      <Grid item md={6}><Typography>Type: {item.type}</Typography></Grid>
+                      <Grid item md={6}><Typography>Sport: {item.sports}</Typography></Grid>
+                      <Grid item md={6}><Typography>Date: {item.date.day.low+"-"+item.date.month.low+"-"+item.date.year.low}</Typography></Grid>
+                      <Grid item md={6}><Typography>Time: {item.time.hour.low+":"+item.time.minute.low}</Typography></Grid>
+                      <CardActions>
+                      <Grid>
+
+                      </Grid>
+                        <Button variant="contained" style={{backgroundColor:"#f44336"}}  onClick={()=>{
+                          handleDecline(item)
+                        }}>Decline</Button>
+                        <Button variant="contained" style={{ backgroundColor:"#4caf50"}} onClick={()=>{
+                          handleAccept(item)
+                        }} >Accept</Button>
+                      </CardActions>
 
                     </Grid>
+                      </CardContent>
+                    </Card>
+                    
                      
     
 
@@ -96,6 +196,16 @@ function Notification()
        
        
       </Menu>
+      <Snackbar open={acceptAlert} autoHideDuration={6000} onClose={handleAcceptAlertClose}>
+        <Alert onClose={handleAcceptAlertClose} severity="success">
+        Match Request Accepted  
+        </Alert>
+</Snackbar>
+  <Snackbar open={declineAlert} autoHideDuration={6000} onClose={handleDeclineAlertClose}>
+        <Alert onClose={handleDeclineAlertClose} severity="error">
+        Match Request Declined    
+        </Alert>
+</Snackbar>
     </div>);
 
 }

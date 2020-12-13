@@ -41,6 +41,8 @@ const handleLogoutfunction=()=>{
   localStorage.removeItem("userId");
   localStorage.removeItem("userFname");
   localStorage.removeItem("userLname");
+  localStorage.removeItem("userLong");
+  localStorage.removeItem("userLat");
   history.push('/');
   setlogOutOpen(false);
 }
@@ -62,13 +64,13 @@ return (
         onClose={handleClose}
       >
       
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose} key="profile">Profile</MenuItem>
         
         
         
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleClose} key="myAccount">My account</MenuItem>
         <div>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout} key="logout">Logout</MenuItem>
         <Dialog
         open={logoutOpen}
         onClose={handleLogoutClose}
