@@ -1,21 +1,23 @@
 import React,{useEffect,useState,forwardRef} from 'react';
 import 
-{Button,
-  Card,CardActionArea,CardContent, 
+{ Card,CardActions,Button,CardContent,
   List,
   ListItem,
     Typography,
     Dialog,
     Slide,
-  CircularProgress} from '@material-ui/core';
-  import CloseIcon from '@material-ui/icons/Close'
-import {makeStyles,useTheme} from '@material-ui/core/styles'
+    Paper,
+    Grid,
+ } from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles'
 import NavbarProfile from '../components/NavbarProfile';
-import TeamCard from  './TeamCard';
+import ImageTitle from '../components/ImageTitle';
 import Loading from './Loading';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 import SelectedTeam from './SelectedTeam';
 import { Link } from 'react-router-dom';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,11 +59,14 @@ function TeamInfo()
     const [openTeamDialog, setOpenTeamDialog] = useState(false);
     const [dialogData,setdialogData]=useState({
       teamName:"",
+      captain:"",
       players:[]
     });
-const handleClickOpenDialog = (teamName,players) => {
+
+const handleClickOpenDialog = (teamName,captain,players) => {
  setdialogData({
    teamName:teamName,
+captain:captain,
     players:[...players]
  })
   setOpenTeamDialog(true);
@@ -91,7 +96,15 @@ const handleCloseDialog = () => {
             else{
 
               setHasTeam(true);
-              setTeamData(res.data.teams);
+              var arr=res.data.teams.map((item)=>{
+                return ({
+                  ...item,
+                  id:uuidv4()
+                })
+
+              });
+             
+             setTeamData(arr);
             }
             
 
@@ -105,7 +118,41 @@ const handleCloseDialog = () => {
 
 
 
-   
+   function handleExit(exit)
+   {
+
+     var newTeams= teamData.filter((item)=>{
+        return (exit.id!=item.id);
+     });
+
+     setTeamData(newTeams);
+
+     axios.post("http://localhost:5000/exit-team",{
+       ...exit,
+       userId:localStorage.getItem("userId")
+     })
+     .then((res)=>{
+       console.log(res);
+     }).catch(err=>{
+       console.log(err);
+     })
+    
+
+
+   }
+
+   function handleViewDetails(detail)
+   {
+
+
+    axios.post("http://localhost:5000/team-details",detail)
+    .then((res)=>{
+      handleClickOpenDialog(detail.name,detail.captain,res.data.players)
+    }).catch(err=>{
+      console.log(err);
+    })
+
+   }
     
 
   
@@ -121,9 +168,13 @@ const handleCloseDialog = () => {
     return (
        
         <div className={classes.root}>
-      <NavbarProfile/>
+      <NavbarProfile isMyTeam={true}/>
+
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        <Paper style={{padding:"2%"}}>
+        <ImageTitle title="MY TEAMS"/>
+
         {
           isFetching ?<Loading/> :
           <div>
@@ -135,8 +186,32 @@ const handleCloseDialog = () => {
            return(
             
              <ListItem key={index}>
-              <TeamCard teamName={team.name} sport={team.sports}  openFunc={handleClickOpenDialog}/>
-              {/* <Typography>{team.name}</Typography> */}
+             
+              <Card style={{minWidth:"100%",padding:"1%"}} >
+           
+        <CardContent>
+        <Grid container>
+        <Grid item xs={12} md={4}>
+        <Typography gutterBottom variant="h5" component="h2"> {team.name}</Typography>
+        </Grid>
+        <Grid item  xs={12} md={4}>
+         <Typography variant="h6" color="textSecondary" ><b>Sport:</b> {team.sports}</Typography>
+         </Grid>
+        <Grid item xs={12} md={4}>
+         <Typography variant="h6"  color="textSecondary" ><b>Captain:</b> {team.captain}</Typography>
+         </Grid>
+         
+        </Grid>
+      </CardContent>
+        <CardActions>
+        <Grid container alignItems="center" justify="center">
+        <Grid item  md={6}><Button onClick={()=>{handleExit(team)}} style={{backgroundColor:"#f44336",color:"white"}}>Exit From Team</Button></Grid>
+        <Grid item md={6}> <Button onClick={()=>{ handleViewDetails(team)} } style={{backgroundColor:"black",color:"white"}}>View Details</Button></Grid>
+        </Grid>
+       
+      
+        </CardActions></Card>
+             
              </ListItem>
          
             
@@ -164,7 +239,7 @@ const handleCloseDialog = () => {
        
         </div>
         }
-      
+      </Paper>
       </main>
     </div>
 

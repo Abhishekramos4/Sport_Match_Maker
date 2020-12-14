@@ -1,14 +1,11 @@
 import React,{useState,useEffect} from 'react';
 import NavbarProfile from './NavbarProfile';
-import bgImg from '../images/img6.jpg';
+import  ImageTitle from './ImageTitle';
 import axios from 'axios';
 import  MuiAlert from '@material-ui/lab/Alert';
 import 
 {Button,
     Grid,
-  Card,CardActionArea,CardContent, 
-  List,
-  ListItem,
     Divider, 
     TextField, 
     Typography,
@@ -22,11 +19,6 @@ import
     DialogContentText,
     DialogContent,
     Snackbar,
-    Slide,
-    AppBar,
-    Toolbar,
-    IconButton,
-  CircularProgress,
   Paper} from '@material-ui/core';
 
   import  {makeStyles} from '@material-ui/core';
@@ -151,7 +143,7 @@ function JoinTeam()
                 setDialogData(
                   {
                     teamName:res.data.team.name,
-                    sport:res.data.team.sport,
+                    sport:res.data.team.sports,
                     captain:res.data.team.captain
                   }
                 );
@@ -254,29 +246,28 @@ function MyAlert({open,handleClose,severity,msg})
 
   return (
     <div className={classes.root}>
-      <NavbarProfile/>
+      <NavbarProfile isJoinTeam={true}/>
       <main className={classes.content}>
         <div className={classes.toolbar} />
     
 
     <Paper className={classes.formPaper}>
-    {/* <div style={{ height:"150px",width:"1000px"}}>
-    <img src={bgImg}/>
-</div> */}
+        <ImageTitle title="JOIN OR CREATE TEAM"/>
+        <Divider style={{marginBottom:"25px"}}/>
         <Grid container spacing={2} >
         {/* Left Side */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={5}>
         <div>
-        <Typography variant="h5" style={{marginBottom:"3%"}}>
+        <Typography variant="h5" style={{marginBottom:"3%"}} align="center">
            Join Team
        </Typography>
    <form >
 
    <Grid container style={{padding:"3%"}} spacing={2} alignItems="center">
-   <Grid md={12} item>
+   <Grid md={12} xs={12} item>
    <TextField label="Team Name" variant="outlined" name="teamName" onChange={handleChangeSearchTeam} fullWidth autoComplete="off"/>
    </Grid>
-   <Grid item md={12}>
+   <Grid item xs={12} md={12}>
    <FormControl variant="outlined" className={classes.formControl}>
    <InputLabel>Sport</InputLabel>
    <Select
@@ -292,7 +283,7 @@ function MyAlert({open,handleClose,severity,msg})
    </Select>
  </FormControl>
    </Grid>
-<Grid item md={12}>
+<Grid item xs={12} md={12}>
 <Button onClick={handleSubmitTeamSearch} fullWidth style={{color:"white",backgroundColor:"black"}}> Search Team</Button>
 </Grid>
    </Grid>
@@ -311,7 +302,7 @@ function MyAlert({open,handleClose,severity,msg})
    <DialogContent>
    
      <DialogContentText id="alert-dialog-description">
-   Team Name: {DialogData.teamName} Sport: {DialogData.sport} Captain: {DialogData.captain}  
+   <b>Team Name:</b>{DialogData.teamName}&nbsp;<b>Sport:</b>{DialogData.sport}&nbsp;<b>Captain:</b>{DialogData.captain}
      </DialogContentText>
    </DialogContent>
    <DialogActions>
@@ -330,17 +321,19 @@ function MyAlert({open,handleClose,severity,msg})
         </div>
             
         </Grid>
-
+        <Grid item md={2}>
+        <Divider orientation="vertical" style={{margin:"0 auto"}}/>
+        </Grid>
         {/* Right Side */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={5}>
         <div>
-     <Typography variant="h5" style={{marginBottom:"3%"}}>
+     <Typography variant="h5" style={{marginBottom:"3%"}} align="center">
           Create Team
        </Typography>
        <form >
        <Grid container spacing={2} alignItems="center" style={{padding:"3%"}}>
 
-       <Grid item md={12}>
+       <Grid item md={12} xs={12}>
        <TextField label="Team Name"
        name="teamName" 
        variant="outlined"
@@ -350,7 +343,7 @@ function MyAlert({open,handleClose,severity,msg})
 
        />
        </Grid>
-       <Grid item md={12}>
+       <Grid item xs={12} md={12}>
     <FormControl variant="outlined" className={classes.formControl}>
    <InputLabel>Sport</InputLabel>
    <Select
@@ -369,7 +362,7 @@ function MyAlert({open,handleClose,severity,msg})
        </Grid>
 
 
-        <Grid item md={12}>
+        <Grid item xs={12} md={12}>
           <Button onClick={handleSubmitCreateTeam} fullWidth style={{backgroundColor:"black",color:"white"}}>Create Team</Button>
         </Grid>
 

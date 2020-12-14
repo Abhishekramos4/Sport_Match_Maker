@@ -53,18 +53,18 @@ backgroundColor:"black"},
     padding: theme.spacing(3),
   },
   links:{
-    textDecoration:'none',
-    color:"black"
+    textDecoration:"none",
+   
   }
 }));
 
 
   
 
-function NavbarProfile()
+function NavbarProfile(props)
 {
-
-    // const { window } = props.window;
+ 
+  // const { window } = props.window;
   const[name,setName]=useState({
     fname:"",
     lname:""
@@ -87,58 +87,147 @@ function NavbarProfile()
         
         <Divider />
         <List>
-        <Link to='/find-match' className={classes.links}>
+
+        {
+          props.isFindMatch?
+          <Link to='/find-match' style={ {textDecoration:'none',color:'white'}}>
             
-            <ListItem button key='Find A Match'>
-            <ListItemIcon><SearchIcon/></ListItemIcon>
+            <ListItem button key='Find A Match' style={{backgroundColor:"black"}}>
+            <ListItemIcon style={{color:'white'}}><SearchIcon/></ListItemIcon>
+              <ListItemText primary='Find A Match' />
+            </ListItem>
+            </Link>:
+            <Link to='/find-match' style={{textDecoration:'none',color:'black'}}>
+            
+            <ListItem button key='Find A Match' >
+            <ListItemIcon ><SearchIcon/></ListItemIcon>
               <ListItemText primary='Find A Match' />
             </ListItem>
             </Link>
-            <Link to='/scheduled-matches' className={classes.links}>
+
+
+        }
+
+        {
+          props.isScheduledMatch?
+          <Link to='/scheduled-matches' style={ {textDecoration:'none',color:'white'}}>
+            
+            <ListItem button key='Scheduled Match' style={{backgroundColor:"black"}}>
+            <ListItemIcon style={{color:'white'}}><AccessTimeIcon/></ListItemIcon>
+              <ListItemText primary='Scheduled Match' />
+            </ListItem>
+            </Link>
+          
+          :
+          <Link to='/scheduled-matches' style={{textDecoration:'none',color:'black'}}>
             
             <ListItem button key='Scheduled Match'>
             <ListItemIcon><AccessTimeIcon/></ListItemIcon>
               <ListItemText primary='Scheduled Match' />
             </ListItem>
-            </Link> 
+            </Link>
+
+        }
+       
+             
        
        <Divider/>
 
-            <Link to='/my-team' className={classes.links}>
+            {
+              props.isMyTeam?
+              <Link to='/my-team' style={ {textDecoration:'none',color:'white'}}>
+            <ListItem button key='My Teams' style={{backgroundColor:"black"}}>
+            <ListItemIcon style={{color:'white'}}><GroupIcon/></ListItemIcon>
+              <ListItemText primary='My Teams' />
+            </ListItem>
+            </Link>
+              
+              
+              :
+              <Link to='/my-team' style={{textDecoration:'none',color:'black'}}>
             <ListItem button key='My Teams'>
             <ListItemIcon><GroupIcon/></ListItemIcon>
               <ListItemText primary='My Teams' />
             </ListItem>
             </Link>
 
-            <Link to='/join-team' className={classes.links} >
+            }
+
+            {
+              props.isJoinTeam?
+              <Link to='/join-team' style={ {textDecoration:'none',color:'white'}} >
             
-            <ListItem button key='Join Team'>
-            <ListItemIcon><GroupAddIcon/></ListItemIcon>
-              <ListItemText primary='Join Team'/>
+            <ListItem button key='Join Team' style={{backgroundColor:"black"}}>
+            <ListItemIcon  style={{color:'white'}}><GroupAddIcon/></ListItemIcon>
+              <ListItemText primary='Join/Create Team' />
             </ListItem>
             </Link>
-            <Divider/>
+              :
+              <Link to='/join-team' style={{textDecoration:'none',color:'black'}} >
+            
+            <ListItem button key='Join Team' >
+            <ListItemIcon  ><GroupAddIcon/></ListItemIcon>
+              <ListItemText primary='Join/Create Team' />
+            </ListItem>
+            </Link>
 
-            <Link to='/interested-sports' className={classes.links}>
+            }
+           
+
+           
+            <Divider/>
+            {
+
+              props.isInterestedSport?
+              <Link to='/interested-sports' style={ {textDecoration:'none',color:'white'}}>
+            <ListItem button key='Interested Sports'  style={{backgroundColor:"black"}}>
+            <ListItemIcon style={{color:'white'}}><SportsIcon/></ListItemIcon>
+              <ListItemText primary='Interested Sports' />
+            </ListItem>
+            </Link>
+
+              :
+
+              <Link to='/interested-sports' style={{textDecoration:'none',color:'black'}}>
             <ListItem button key='Interested Sports'>
             <ListItemIcon><SportsIcon/></ListItemIcon>
               <ListItemText primary='Interested Sports' />
             </ListItem>
             </Link>
 
+
+            }
+
+            
+
             <Divider/>
-            <Link to='/grounds-near-me' className={classes.links}>
+
+            {
+              props.isGround?
+              <Link to='/grounds-near-me' style={ {textDecoration:'none',color:'white'}}>
+            <ListItem button key='Grounds Near Me' style={{backgroundColor:"black"}}>
+            <ListItemIcon style={{color:'white'}}><RoomIcon/></ListItemIcon>
+              <ListItemText primary='Grounds Near Me'/>
+            </ListItem>
+            </Link>
+              
+              :
+              <div>
+              <Link to='/grounds-near-me' style={ {textDecoration:'none',color:'black'}}>
             <ListItem button key='Grounds Near Me'>
             <ListItemIcon><RoomIcon/></ListItemIcon>
               <ListItemText primary='Grounds Near Me'/>
             </ListItem>
             </Link>
+            <Divider/>
+            </div>
+            }
+           
             
             
          
         </List>
-        <Divider />
+        
        </div>
     );
    

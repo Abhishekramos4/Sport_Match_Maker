@@ -3,6 +3,7 @@ import NavbarProfile from './NavbarProfile'
 import {makeStyles} from '@material-ui/core/styles'
 import {Paper, Typography} from '@material-ui/core';
 import axios from 'axios';
+import ImageTitle from './ImageTitle';
 import GroundsMapHolder from './GroundsMapHolder';
 
 const useStyles=makeStyles((theme)=>(
@@ -46,11 +47,12 @@ const [groundData,setGroundData]=useState([]);
 return (
 
 <div className={classes.root}>
-<NavbarProfile/>
+<NavbarProfile isGround={true}/>
 <main className={classes.content}>
 <div className={classes.toolbar} />
 <Paper style={{padding:"2%"}}>
-<Typography align="center" variant="h5" style={{marginBottom:"2%"}}>GROUNDS NEAR ME</Typography>
+
+<ImageTitle title="GROUNDS NEAR ME"/>
 <GroundsMapHolder groundData={groundData}/>
 </Paper>
 

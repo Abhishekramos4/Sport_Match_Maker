@@ -5,6 +5,7 @@ import {Paper,Grid,TextField,Typography, Button, Divider,Snackbar} from '@materi
 import  MuiAlert from '@material-ui/lab/Alert';
 import {Link,useHistory} from 'react-router-dom';
 import axios from 'axios';
+import ImageTitle from './ImageTitle';
 import FooterMain from './FooterMain';
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -201,7 +202,7 @@ function Register()
 <NavbarMain isLogin={true} />
 <Paper className={classes.formPaper}>
 
-<Typography variant='h4' align="center"> Register</Typography>
+<ImageTitle title="REGISTER"/>
 
 
 <form >

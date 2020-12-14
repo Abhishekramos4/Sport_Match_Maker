@@ -5,11 +5,15 @@ import {
     List,
     ListItem,
     Typography,
-    Avatar,Grid
+    Grid,
+    Paper
 
 } from '@material-ui/core';
 import NavbarProfile from './NavbarProfile'
 import {makeStyles} from '@material-ui/core/styles';
+import ImageTitle from './ImageTitle';
+import Loading from './Loading';
+
 // import CricketCard from '../images/CricketCard.jpg';
 // import FootballCard from '../images/FootballCard.jpg';
 // import VolleyballCard from '../images/VolleyballCard.jpg';
@@ -48,35 +52,56 @@ function ScheduledMatches()
 
 const classes = useStyles();
  const[matches,setMatches]=useState([]);  
+ const[isLoading,setIsLoading]=useState(true);
 
  useEffect(()=>{
 
-//axios.post()
+axios.get("http://localhost:5000/team-info",{
+  params:{
+    userId:localStorage.getItem("userId")
+  }
+}).then((resout)=>{
 
-var data = [{
-type:"individual",
-sport:"Chess",
-opponent:"sr4",
-date:"",
-time:"",
-},
-{
-type:"individual",
-sport:"Cricket",
-opponent:"Andheri Tigers",
-date:"",
-time:"",
+  var teamsArr=resout.data.teams.map((item)=>{
+    return(item.name);
+  });
+  console.log(teamsArr);
+  axios.get("http://localhost:5000/schedule-match",{params:{
 
-}];
-setMatches(data);
+userId:localStorage.getItem("userId")
+,teams:teamsArr
 
-})
+}}).then((resin)=>{
+
+console.log(resin);
+
+setMatches(resin.data.matches);
+setIsLoading(false)
+}).
+catch((err)=>
+{console.log(err);})
+
+}).catch((err)=>{
+console.log(err);
+});
+
+
+
+
+},[]);
 return(
 <div className={classes.root}>
-      <NavbarProfile />
+      <NavbarProfile isScheduledMatch={true}/>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <List>
+        <Paper style={{padding:"2%"}}>
+        <ImageTitle title="SCHEDULED MATCHES"/>
+    {
+        isLoading?<Loading/>:
+        matches.length===0?
+       <Typography align="center">You have no scheduled matches.</Typography>
+       
+     :  <List>
             
             
             {matches.map((item)=>{
@@ -85,15 +110,10 @@ return(
             <Card className={classes.matchCard}>
             <CardContent>
             <Grid container>
-                <Grid item lg ={2} sm={3} xs={12}>
-                <Avatar style={{height:"100px",width:"100px"}} >{item.opponent[0]+item.opponent[1]}</Avatar>
-                </Grid>
-                <Grid item lg={10} sm={9} xs={12}>
-                <Typography><Typography variant='h6'>Sport Type:</Typography>{item.type}</Typography>
-                <Typography><Typography variant='h6'>Opponent:</Typography>{item.opponent}</Typography>
-                <Typography><Typography variant='h6'>Sport:</Typography>{item.sport}</Typography>
-                
-                </Grid>
+            <Grid item md={12} align="center">
+              <Typography variant="h5" >{item.sender} vs {item.receiver}</Typography>
+            </Grid>    
+            
             </Grid>
             
             
@@ -107,6 +127,14 @@ return(
                 }
             
         </List>
+
+    
+
+    }
+
+        
+        </Paper>
+        
        
         
         </main>

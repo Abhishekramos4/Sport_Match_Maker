@@ -278,7 +278,7 @@ app.get("/get-nearby-grounds", async (req, res) => {
         userLocation.lat,
         userLocation.long
       );
-      if (dist < 2) {
+      if (dist <= 10) {
         nearbyGrounds.push({
                   Name: record.get(0).properties.name,
                   Address: record.get(0).properties.address,
@@ -482,8 +482,7 @@ app.get("/captain-teams-search",function(req,res)
 
   var obj={
     userId:req.query.userId,
-
-  };
+};
 
 const session = driver.session();
 session.run('MATCH(n:User{userId:$userId})-[:IS_CAPTAIN_OF]->(t:Team) RETURN t',obj).then((result)=>{
@@ -554,9 +553,18 @@ app.get("/profile", auth, function (req, res) {
 app.post("/send-request",function(req,res)
 {
 
+  var sender;
+  if(req.body.type==="individual")
+  {
+    sender=req.body.userId;
+  }
+  else{
+    sender=req.body.sender
+  }
+
   var obj={
 
-    sender:req.body.team,
+    sender:sender,
     opponent:req.body.opponent,
     sport:req.body.sport,
     date:req.body.date,
@@ -564,6 +572,7 @@ app.post("/send-request",function(req,res)
     type:req.body.type
   }
 
+  console.log(obj);
 let session = driver.session();
 
 session.run("MERGE(n:Request{date:date($date),sender:$sender,receiver:$opponent,sports:$sport,time:time($time),type:$type}) RETURN n",obj)
@@ -624,8 +633,8 @@ for(var i=0;i<teamArr.length;i++)
     }
 
 }
-
-console.log(inString);
+console.log(teamArr,"627");
+console.log(inString,"627");
 
 let session1 = driver.session();
 
@@ -687,6 +696,7 @@ console.log(err);
 
 app.post("/request-accept",function (req,res) {
 let session1 = driver.session();
+
 
 var obj={
 id:req.body.id,
@@ -755,29 +765,158 @@ id:req.body.id,
 
 
 
-// app.get("/schedule-match", async (req, res) => {
-//   let match = {
-//     opponent: req.body.opponent,
-//     host: req.body.host,
-//     date: DateTime(req.body.date),
-//     time: req.body.time,
-//   };
+app.get("/schedule-match", function (req, res)  {
+  let obj = {
+    userId:req.query.userId,
+    
+  };
+  var teamArr=req.query.teams;
+  var inString="[";
 
-//   let session = driver.session();
-//   try {
-//     let result = await session.run(
-//       "CREATE (m:Match{opponent: $opponent, host: $host,date: $date, time: $time}) RETURN m",
-//       match
-//     );
+  for(var i=0;i<teamArr.length;i++)
+  {
+      inString+="'"+teamArr[i];
+      if(i==teamArr.length-1)
+      {
+        inString+="']";
+      }
+      else{
+        inString+="',"
+      }
+  
+  }
+ 
 
-//     console.log(result);
-//     await session.close();
+  let session1 = driver.session();
+ 
+  //Individual matches
+     session1.run(
+      "MATCH(r:ScheduledMatch) WHERE r.sender=$userId OR r.receiver=$userId return r",
+      obj
+    )
+    .then((result)=>{
+      var matches=[];
+      if(result.records.length>0)
+      {
+        for(var i=0;i<result.records.length;i++)
+        {
+          matches.push(result.records[i].get(0).properties);
+        }
+      }
 
-//     res.json({ msg: "Match has been scheduled" });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// });
+      let session2=driver.session();
+
+
+      session2.run("MATCH(r:ScheduledMatch) WHERE r.sender IN "+inString+" OR r.receiver IN "+inString+" RETURN r")
+      .then((result)=>{
+        if(result.records.length>0)
+        {
+          console.log(result.records);
+          for(var i=0;i<result.records.length;i++)
+          {
+            matches.push(result.records[i].get(0).properties);
+          }
+        }
+
+        res.json({
+          matches:matches
+        })
+      }).catch((err)=>{
+        console.log(err);
+      }).finally(()=>{
+        session2.close();
+      })
+
+      
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+    .finally(()=>{
+      session1.close();
+    })
+    ;
+  
+  
+  }
+   
+);
+
+
+//Exit From Team
+
+app.post("/exit-team",function(req,res)
+{
+
+var obj={
+  userId:req.body.userId,
+  name:req.body.name,
+  sports:req.body.sports,
+  captain:req.body.captain
+
+};
+
+console.log(obj);  
+let session1= driver.session();
+session1
+.run("MATCH(n:User{userId:$userId})-[r:IS_CAPTAIN_OF]->(t:Team{name:$name,sports:$sports}) DETACH DELETE t",obj
+)
+.then((resultout)=>{
+console.log(resultout);
+  let session2=driver.session();
+  session2.run("MATCH(n:User{userId:$userId})-[r:IS_PLAYER_OF]->(t:Team{name:$name,sports:$sports,captain:$captain}) DELETE r",obj)
+  .then((resultin)=>{
+console.log(resultin);
+res.json({
+  msg:"Exit SucessFull"
+})
+  })
+  .catch((err)=>{
+    console.log(err);
+  })
+  .finally(()=>{
+    session2.close();
+  })
+
+})
+.catch((err)=>{
+  console.log(err);
+})
+.finally(()=>{
+  session1.close()
+})
+
+
+
+});
+
+//ALL PLAYERS
+
+app.post("/team-details",function (req,res) {
+
+  var obj={
+    name:req.body.name,
+    captain:req.body.captain,
+    sports:req.body.sports
+  }
+
+let session=driver.session();
+session.run("MATCH(u:User)-[:IS_PLAYER_OF]->(t:Team{name:$name,sports:$sports,captain:$captain}) RETURN u",obj)
+.then((result)=>{
+var players=[];
+for(var i=0;i<result.records.length;i++){
+  players.push(result.records[i].get(0).properties);
+  
+}
+res.json({
+  players:players
+});
+}
+)
+.catch((err)=>{console.log(err);})
+.finally(()=>{session.close()})
+  
+})
 
 
 app.listen(5000,function()

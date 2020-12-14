@@ -1,7 +1,7 @@
 import React from 'react';
 import bgImage from '../images/img5_cr.jpg'
 import NavbarMain from '../components/NavbarMain'; 
-import {makeStyles,Typography,Grid,Card,CardContent} from '@material-ui/core';
+import {makeStyles,Typography,Grid,Card,CardContent, withTheme} from '@material-ui/core';
 import GroupIcon from '@material-ui/icons/Group';
 import SearchIcon from '@material-ui/icons/Search';
 import SportsHandballIcon from '@material-ui/icons/SportsHandball';
@@ -38,7 +38,10 @@ const useStyles=makeStyles((theme)=>({
     },
     card:{
         padding:"2%",
-        height:"200px"
+        height:"200px",
+        // color:"white",
+        // backgroundColor:"black"
+
       
     },
     icon:{
@@ -66,7 +69,7 @@ const classes=useStyles();
     <Typography className={classes.tagLine}>Find A Match ! Play A Match !</Typography>
     </div>
     </div>
-    <Grid container>
+    <Grid container >
     <Grid item  xs={12} sm={12} md={4}>
    
    <Card variant="outlined" square="true" className={classes.card}>

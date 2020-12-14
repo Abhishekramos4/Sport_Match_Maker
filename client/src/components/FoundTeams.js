@@ -43,30 +43,10 @@ function FoundTeams(props)
     const{matchReq,nearbyTeams,isTeam} = props;
 
 
-    const[teams,setTeams] = useState([]);
-    const [isLoading,setIsLoading]=useState(true);
+    const[teams,setTeams] = useState(nearbyTeams);
+    const [isLoading,setIsLoading]=useState(false);
     
   
-    useEffect(()=>{
-        
-        console.log(nearbyTeams);
-        var arr= [ nearbyTeams.map((team)=>{
-            return(
-                {
-                    ...team,
-                    sent:false
-                }
-            );
-        })];
-        setTeams(arr);
-        setTimeout(()=>{setIsLoading(false);},2000)
-        
-    },[nearbyTeams]);
-
-    useEffect(()=>{
-        console.log(teams);
-    },[teams])
-
     
 
 function sendMatchRequest(teamName)
@@ -76,6 +56,7 @@ function sendMatchRequest(teamName)
     console.log(matchReq);
     alert("Request sent to"+teamName);
  var  obj={
+     userId:localStorage.getItem("userId"),
      type:matchReq.type,
     team:matchReq.team,
     opponent:teamName,
@@ -89,20 +70,6 @@ function sendMatchRequest(teamName)
     }).catch((err)=>{
             console.log(err)
     });
-    
-    // // axios.post()
-    //     console.log(teamName);
-    //     console.log(teams);
-    //    var i = teams.findIndex((obj)=>{
-    //        return obj.teamName==teamName;
-    //     });
-
-    //     setTeams((prev)=>{
-    //         prev[i]={
-    //             ... prev[i],
-    //             sent:true
-    //         }
-    //     });
 
         
 }
@@ -110,6 +77,7 @@ function sendMatchRequest(teamName)
     return(
     <div>
     <AppBar className={classes.appBar} >
+    {console.log(teams)}
         <Toolbar >
         <IconButton edge="start" color="inherit" onClick={props.closeFunc} aria-label="close">
       <CloseIcon />
@@ -142,6 +110,9 @@ function sendMatchRequest(teamName)
                                     <CardContent>
                                         <Typography>
                                        {user.fname+" "+user.lname}
+                                        </Typography>
+                                        <Typography>
+                                            {user.sport}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>

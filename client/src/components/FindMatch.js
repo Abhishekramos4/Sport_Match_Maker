@@ -20,7 +20,7 @@ Slide,
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import axios from 'axios';
 import Loading from './Loading';
-
+import ImageTitle from './ImageTitle';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -157,7 +157,7 @@ const[matchReq,setMatchReq]=useState({});
       console.log(matchFormPlayer);
       var form={
         ...matchFormPlayer,
-        team:localStorage.getItem("userId")
+        id:localStorage.getItem("userId")
       }
       setMatchReq(form);
       console.log("Request to Nearby Players");
@@ -228,17 +228,22 @@ const[matchReq,setMatchReq]=useState({});
     //Find Match Captain
     function handleMatchFindCaptain()
     {
-      
+      // var form;
      
-      console.log(matchFormCaptain);
-      var form={
-        ...matchFormCaptain,
-        team:localStorage.getItem("userId")
-      }
+      // console.log(matchFormCaptain);
+      // if(matchFormCaptain.type=="individual")
+      // {
+      var  form={
+          ...matchFormCaptain,
 
-        setMatchReq(form);
+        }
+      // }
+     
+
+      setMatchReq(form);
       if(matchFormCaptain.type=="individual")
       {
+
         console.log("Request to nearby individual");
         var data = {
           userId:localStorage.getItem("userId"),
@@ -295,38 +300,41 @@ return (
 
     
     <div className={classes.root}>
-      <NavbarProfile />
+      <NavbarProfile isFindMatch={true}/>
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        
+
         {
           isFetching?<Loading/>:isCaptain?
          
           <div>
           <Paper  className={classes.formPaper}>
-          <Typography variant="h5">Find A Match</Typography>
+          <ImageTitle title="FIND A MATCH"/>
           <form>
       <FormControl style={{width:"100%"}} component="fieldset" className={classes.fields} >
-      <FormLabel>Type of Sport </FormLabel>
+     <Typography variant="h6">Type of Sport</Typography> 
       <RadioGroup  className={classes.radio} name="type" value={radioVal} onChange={handleOnChangeRadioCaptain}>
-        <Grid container>
-          <Grid item xs={12} md={6}><FormControlLabel  color="default" value="team" control={<Radio />} label="Team" /></Grid>
-          <Grid item xs={12} md={6}><FormControlLabel value="individual" control={<Radio />} label="Indivdual" />
+        <Grid container alignItems="center">
+          <Grid item xs={12} md={6} ><FormControlLabel  color="default" value="team" control={<Radio />} label="Team" /></Grid>
+          <Grid item xs={12} md={6} ><FormControlLabel value="individual" control={<Radio />} label="Indivdual" />
         </Grid>
         </Grid>
          </RadioGroup>
     </FormControl>
 
-<Grid container>
+<Grid container alignItems="center">
 
-<Grid item xs={12} md={6}>
+<Grid item xs={12} md={6} align="center">
 {
-  isIndividual?<FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
+  isIndividual?<FormControl  className={classes.fields} variant="outlined"  style={{width:"90%"}} >
         <InputLabel>Sport</InputLabel>
         <Select
           name="sport"
           label="Sport"
         onChange={handleOnChangeCaptain}
         value={matchFormCaptain.sport}
+        fullWidth
         >
           <MenuItem value="Chess" key="Chess">Chess</MenuItem>
           <MenuItem value="Badminton" key="Badminton" >Badminton</MenuItem>
@@ -335,13 +343,14 @@ return (
           
         </Select>
       </FormControl> :
-      <FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
+      <FormControl  className={classes.fields} variant="outlined"  style={{width:"90%"}} >
         <InputLabel>Sport</InputLabel>
         <Select
           name="sport"
           label="Sport"
         onChange={handleOnChangeCaptain}
         value={matchFormCaptain.sport}
+        fullWidth
         >
           <MenuItem value="Football" key="Football">Football</MenuItem>
           <MenuItem value="Cricket"   key="Cricket">Cricket</MenuItem>
@@ -352,14 +361,15 @@ return (
 
 </Grid>
 {
-  isIndividual===false?  <Grid item xs={12} md={6}>
-  <FormControl  className={classes.fields} variant="outlined" style={{width:"70%"}} >
+  isIndividual===false?  <Grid item xs={12} md={6} align="center">
+  <FormControl  className={classes.fields} variant="outlined" style={{width:"90%"}} >
         <InputLabel>Teams</InputLabel>
         <Select
           name="team"
           label="team"
           onChange={handleOnChangeCaptain}
           value={matchFormCaptain.team}
+          fullWidth
         >
         {
           matchFormCaptain.sport==="Football"
@@ -407,11 +417,12 @@ return (
 
 
 <Grid container >
- <Grid item xs={12} md={6}>
+ <Grid item xs={12} md={6} align="center">
   <TextField
+  fullWidth
   onChange={handleOnChangeCaptain}
    className={classes.fields}
-  style={{width:"70%"}}
+  style={{width:"90%"}}
   name="date"
     id="date"
     variant="outlined"
@@ -423,12 +434,12 @@ return (
     }}
   />
   </Grid>
-  <Grid  item xs={12} md={6}>
+  <Grid  item xs={12} md={6} align="center">
   <TextField
   onChange={handleOnChangeCaptain}
    className={classes.fields}
    name="time"
-    style={{width:"70%"}}
+    style={{width:"90%"}}
     id="time"
     variant="outlined"
     label="Match Time"
@@ -447,7 +458,7 @@ return (
 
   </Grid>
   <Grid item xs={12} md={2}>
-  <Button className={classes.fields} variant="contained" style={{backgroundColor:"black",
+  <Button className={classes.fields} variant="contained" fullWidth style={{backgroundColor:"black",
   color:"white"}} onClick={handleMatchFindCaptain}>
  Find
 </Button>
@@ -468,9 +479,9 @@ return (
 
 <Grid container>
 
-<Grid item xs={12} md={6}>
+<Grid item xs={12} md={6} align="center">
 
-  <FormControl  className={classes.fields} variant="outlined"  style={{width:"70%"}} >
+  <FormControl  className={classes.fields} variant="outlined"  style={{width:"90%"}} >
         <InputLabel>Sport</InputLabel>
         <Select
           name="sport"
@@ -490,11 +501,11 @@ return (
 
 
 <Grid container >
- <Grid item xs={12} md={6}>
+ <Grid item xs={12} md={6} align="center">
   <TextField
   onChange={handleOnChangePlayer}
    className={classes.fields}
-  style={{width:"70%"}}
+  style={{width:"90%"}}
   name="date"
     id="date"
     variant="outlined"
@@ -506,12 +517,12 @@ return (
     }}
   />
   </Grid>
-  <Grid  item xs={12} md={6}>
+  <Grid  item xs={12} md={6} align="center">
   <TextField
   onChange={handleOnChangePlayer}
    className={classes.fields}
    name="time"
-    style={{width:"70%"}}
+    style={{width:"90%"}}
     id="time"
     variant="outlined"
     label="Match Time"
@@ -530,7 +541,7 @@ return (
 
   </Grid>
   <Grid item xs={12} md={2}>
-  <Button className={classes.fields} variant="contained" style={{backgroundColor:"black",
+  <Button className={classes.fields} variant="contained" fullWidth style={{backgroundColor:"black",
   color:"white"}} onClick={handleMatchFindPlayer}>
  Find
 </Button>

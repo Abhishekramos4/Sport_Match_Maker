@@ -209,7 +209,7 @@ return (
         textAlign:"center",marginBottom:"2%"}}>
    <img src={loginImg} height="250px" width="100%"/>
    <div style={{position:"absolute",bottom:"10%" ,left:"35%"}}>
-       <Typography className={classes.loginText}>Login</Typography>
+       <Typography className={classes.loginText}>LOGIN</Typography>
    </div>
    </div>
     

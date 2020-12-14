@@ -1,16 +1,17 @@
 import React,{useEffect,useState} from 'react';
-import {Link,useHistory} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import  MuiAlert from '@material-ui/lab/Alert';
 import NavbarProfile from './NavbarProfile';
-import CricketCard from '../images/CricketCard.jpg';
-import FootballCard from '../images/FootballCard.jpg';
-import VolleyballCard from '../images/VolleyballCard.jpg';
+import ImageTitle from './ImageTitle';
+// import CricketCard from '../images/CricketCard.jpg';
+// import FootballCard from '../images/FootballCard.jpg';
+// import VolleyballCard from '../images/VolleyballCard.jpg';
 import ChessCard from '../images/ChessCard.jpg';
 import TennisCard from '../images/TennisCard.jpg';
 import BadmintonCard from '../images/BadmintonCard.jpg';
 import PoolCard from '../images/PoolCard.jpg';
 import Loading from './Loading';
-import {Typography,Card,CardMedia,CardContent,CardActions,Grid,Button,Divider,Snackbar}   from  '@material-ui/core';
+import {Typography,Card,CardMedia,CardContent,CardActions,Grid,Button,Divider,Snackbar,Paper}   from  '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import axios from 'axios';
 
@@ -26,12 +27,14 @@ const useStyles = makeStyles((theme)=>({
         display: 'flex',
       },
       buttonStyleAdd:{
+          color:"white",
           position:'relative',
           left:"78%",
           backgroundColor:"#4caf50"
          
       },
       buttonStyleRemove:{
+        color:"white",
         position:'relative',
         left:"68%",
         backgroundColor:"#f44336"
@@ -210,11 +213,11 @@ return(
 
 
 <div className={classes.root}>
-<NavbarProfile/>
+<NavbarProfile isInterestedSport={true}/>
 <main className={classes.content}>
 <div className={classes.toolbar} />
-
-
+<Paper style={{padding:"2%"}}>
+<ImageTitle  title="INTERESTED SPORTS"/>
 {/* <Typography variant='h4' style={{marginBottom:"2%"}}>Team Sports</Typography>
 
 <Grid container spacing={3} justify="center" style={{marginBottom:"50px"}}>
@@ -275,7 +278,6 @@ return(
 
 {isLoading?<Loading/>:
 <div>
-<Typography variant='h4' style={{marginBottom:"2%"}}>Individual Sports</Typography>
 <Grid container spacing={3} style={{marginBottom:"50px"}}>
 <Grid item xs={12}   sm={6} md={4}>
 <Card className={classes.rootCard}>
@@ -356,6 +358,7 @@ return(
 
 </div>
 }
+</Paper>
 </main>
 </div>
 

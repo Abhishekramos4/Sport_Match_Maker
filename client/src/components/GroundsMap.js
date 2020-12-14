@@ -10,7 +10,9 @@ function GroundsMap(props)
 const mapContainerStyle={
 
     width: "100%",
+    borderRadius:"10px",
     height: "500px",
+    
    
 
 }

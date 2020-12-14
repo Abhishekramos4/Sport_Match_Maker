@@ -64,11 +64,7 @@ return (
         onClose={handleClose}
       >
       
-        <MenuItem onClick={handleClose} key="profile">Profile</MenuItem>
-        
-        
-        
-        <MenuItem onClick={handleClose} key="myAccount">My account</MenuItem>
+       <MenuItem onClick={handleClose} key="editProfile">Edit Profile</MenuItem>
         <div>
         <MenuItem onClick={handleLogout} key="logout">Logout</MenuItem>
         <Dialog
@@ -87,11 +83,11 @@ return (
         </DialogContent>
         <DialogActions>
           
-          <Button onClick={handleLogoutClose} color="primary">
-            Cancel
+          <Button onClick={handleLogoutClose} variant="contained" style={{ backgroundColor:"#f44336",color:"white"}}>
+            CANCEL
           </Button>
-          <Button onClick={handleLogoutfunction} color="primary" autoFocus>
-            Yes
+          <Button onClick={handleLogoutfunction} variant="contained" style={{backgroundColor:"#4caf50",color:"white"}} >
+            YES
           </Button>
         </DialogActions>
       </Dialog>
