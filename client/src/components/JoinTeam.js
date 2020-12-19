@@ -279,7 +279,7 @@ function MyAlert({open,handleClose,severity,msg})
     
      <MenuItem value="Football">Football</MenuItem>
      <MenuItem value="Cricket">Cricket</MenuItem>
-     <MenuItem value="VolleyBall">Volleyball</MenuItem>
+     <MenuItem value="Volleyball">Volleyball</MenuItem>
    </Select>
  </FormControl>
    </Grid>
@@ -356,7 +356,7 @@ function MyAlert({open,handleClose,severity,msg})
     
      <MenuItem value="Football">Football</MenuItem>
      <MenuItem value="Cricket">Cricket</MenuItem>
-     <MenuItem value="VolleyBall">Volleyball</MenuItem>
+     <MenuItem value="Volleyball">Volleyball</MenuItem>
    </Select>
  </FormControl>
        </Grid>

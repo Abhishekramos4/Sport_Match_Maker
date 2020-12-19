@@ -559,7 +559,7 @@ app.post("/send-request",function(req,res)
     sender=req.body.userId;
   }
   else{
-    sender=req.body.sender
+    sender=req.body.team;
   }
 
   var obj={

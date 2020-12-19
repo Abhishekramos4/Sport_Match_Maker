@@ -10,9 +10,11 @@ import {Typography,
     Button,
 CardContent,
 CardActions,
+Snackbar
 } from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import  MuiAlert from '@material-ui/lab/Alert';
 import FoundTeamMap from './FoundTeamMap';
 import Loading from './Loading';
 import axios from 'axios';
@@ -45,8 +47,19 @@ function FoundTeams(props)
 
     const[teams,setTeams] = useState(nearbyTeams);
     const [isLoading,setIsLoading]=useState(false);
-    
+    const[openRequestAlert,setOpenRequestAlert] = useState(false);
   
+
+    function handleRequestAlertClose(event,reason)
+{
+
+    if (reason === "clickaway") {
+        return;
+      }
+  
+     setOpenRequestAlert(false);
+
+}
     
 
 function sendMatchRequest(teamName)
@@ -54,7 +67,7 @@ function sendMatchRequest(teamName)
        
     console.log(teamName);
     console.log(matchReq);
-    alert("Request sent to"+teamName);
+   
  var  obj={
      userId:localStorage.getItem("userId"),
      type:matchReq.type,
@@ -67,12 +80,18 @@ function sendMatchRequest(teamName)
 
     axios.post("http://localhost:5000/send-request",obj).then((res)=>{
         console.log(res.data);
+        setOpenRequestAlert(true);
     }).catch((err)=>{
             console.log(err)
     });
 
         
 }
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }  
+
 
     return(
     <div>
@@ -108,11 +127,14 @@ function sendMatchRequest(teamName)
                                 <Card className={classes.teamCard}>
                                
                                     <CardContent>
-                                        <Typography>
+                                        <Typography variant="h6">
                                        {user.fname+" "+user.lname}
                                         </Typography>
                                         <Typography>
-                                            {user.sport}
+                                        <b>UserId:</b>&nbsp;   {user.userId}
+                                        </Typography>
+                                        <Typography>
+                                        <b>Contact:</b>&nbsp; {user.contact}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
@@ -160,8 +182,14 @@ function sendMatchRequest(teamName)
                                 <Card className={classes.teamCard}>
                                
                                     <CardContent>
-                                        <Typography>
+                                        <Typography variant="h6">
                                        {team.name}
+                                        </Typography>
+                                        <Typography>
+                                            <b>Captain:</b>&nbsp;{team.captain}
+                                        </Typography>
+                                        <Typography>
+                                            <b>Sport:</b>&nbsp;{team.sports}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
@@ -194,6 +222,14 @@ function sendMatchRequest(teamName)
             }
             </List>
             }
+            <Snackbar open={openRequestAlert} autoHideDuration={6000} onClose={handleRequestAlertClose}>
+        <Alert onClose={handleRequestAlertClose} severity="success">
+        
+        Request sent successfully.
+            
+        </Alert>
+</Snackbar>
+
 
 
             </div>

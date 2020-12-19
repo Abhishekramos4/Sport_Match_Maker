@@ -8,7 +8,7 @@ function Map(props)
 
         width: "100%",
         height: "600px",
-       
+          
 
     }
 

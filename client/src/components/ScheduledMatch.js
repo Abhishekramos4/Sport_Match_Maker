@@ -110,9 +110,21 @@ return(
             <Card className={classes.matchCard}>
             <CardContent>
             <Grid container>
-            <Grid item md={12} align="center">
-              <Typography variant="h5" >{item.sender} vs {item.receiver}</Typography>
-            </Grid>    
+            <Grid item md={12}>
+              <Typography variant="h5" ><b>{item.sender}</b> vs <b>{item.receiver}</b></Typography>
+            </Grid>  
+            <Grid item md={6}>
+            <Typography><b>Sports:</b>&nbsp;{item.sports}</Typography>
+            </Grid>
+            <Grid item md={6}>
+            <Typography><b>Type:</b>&nbsp;{item.type}</Typography>
+            </Grid>
+            <Grid item md={6}>
+            <Typography><b>Date:</b>&nbsp;{item.date.day.low+"-"+item.date.month.low+"-"+item.date.year.low}</Typography>
+            </Grid>
+            <Grid item md={6}>
+            <Typography><b>Time:</b>&nbsp;{item.time.hour.low+":"+item.time.minute.low}</Typography>
+            </Grid>
             
             </Grid>
             

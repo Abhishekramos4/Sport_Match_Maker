@@ -207,7 +207,7 @@ return (
    <div style={{position:"relative",
      color:"white",
         textAlign:"center",marginBottom:"2%"}}>
-   <img src={loginImg} height="250px" width="100%"/>
+   <img src={loginImg} height="250px" width="100%" style={{borderRadius:"5px"}}/>
    <div style={{position:"absolute",bottom:"10%" ,left:"35%"}}>
        <Typography className={classes.loginText}>LOGIN</Typography>
    </div>

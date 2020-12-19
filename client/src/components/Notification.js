@@ -160,23 +160,25 @@ function Alert(props) {
                     <Card >
                       <CardContent style={{maxWidth:"450px"}}>
                       <Grid container>
-                      <Grid item md={6}><Typography>From: {item.sender}</Typography></Grid>
-                      <Grid item md={6}><Typography>To: {item.receiver}</Typography></Grid>
-                      <Grid item md={6}><Typography>Type: {item.type}</Typography></Grid>
-                      <Grid item md={6}><Typography>Sport: {item.sports}</Typography></Grid>
-                      <Grid item md={6}><Typography>Date: {item.date.day.low+"-"+item.date.month.low+"-"+item.date.year.low}</Typography></Grid>
-                      <Grid item md={6}><Typography>Time: {item.time.hour.low+":"+item.time.minute.low}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>From:</b>&nbsp;{item.sender}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>To:</b>&nbsp; {item.receiver}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>Type:</b>&nbsp; {item.type}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>Sport:</b>&nbsp; {item.sports}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>Date:</b>&nbsp; {item.date.day.low+"-"+item.date.month.low+"-"+item.date.year.low}</Typography></Grid>
+                      <Grid item md={6}><Typography><b>Time:</b>&nbsp; {item.time.hour.low+":"+item.time.minute.low}</Typography></Grid>
+                      <Grid  item md={6}></Grid>
+                      <Grid  item md={6} align="right">
                       <CardActions>
-                      <Grid>
-
-                      </Grid>
-                        <Button variant="contained" style={{backgroundColor:"#f44336"}}  onClick={()=>{
+                      <Button variant="contained" style={{backgroundColor:"#f44336"}}  onClick={()=>{
                           handleDecline(item)
                         }}>Decline</Button>
                         <Button variant="contained" style={{ backgroundColor:"#4caf50"}} onClick={()=>{
                           handleAccept(item)
                         }} >Accept</Button>
                       </CardActions>
+
+                      </Grid>
+                        
 
                     </Grid>
                       </CardContent>

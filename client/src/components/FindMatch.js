@@ -33,13 +33,12 @@ const useStyles = makeStyles((theme) => ({
     },
   
     formPaper:{
-      padding:"2%"
+      padding:"3%",
+      width:"90%",
+      margin:"0 auto"
     },
   radio:{
   color:"black",
-  '&$checked': {
-    color:"black",
-  }
   },
     content: {
       flexGrow: 1,
@@ -325,7 +324,7 @@ return (
 
 <Grid container alignItems="center">
 
-<Grid item xs={12} md={6} align="center">
+<Grid item xs={12} md={6} >
 {
   isIndividual?<FormControl  className={classes.fields} variant="outlined"  style={{width:"90%"}} >
         <InputLabel>Sport</InputLabel>
@@ -361,7 +360,7 @@ return (
 
 </Grid>
 {
-  isIndividual===false?  <Grid item xs={12} md={6} align="center">
+  isIndividual===false?  <Grid item xs={12} md={6} >
   <FormControl  className={classes.fields} variant="outlined" style={{width:"90%"}} >
         <InputLabel>Teams</InputLabel>
         <Select
@@ -417,7 +416,7 @@ return (
 
 
 <Grid container >
- <Grid item xs={12} md={6} align="center">
+ <Grid item xs={12} md={6} >
   <TextField
   fullWidth
   onChange={handleOnChangeCaptain}
@@ -434,7 +433,7 @@ return (
     }}
   />
   </Grid>
-  <Grid  item xs={12} md={6} align="center">
+  <Grid  item xs={12} md={6} >
   <TextField
   onChange={handleOnChangeCaptain}
    className={classes.fields}
@@ -479,7 +478,7 @@ return (
 
 <Grid container>
 
-<Grid item xs={12} md={6} align="center">
+<Grid item xs={12} md={6} >
 
   <FormControl  className={classes.fields} variant="outlined"  style={{width:"90%"}} >
         <InputLabel>Sport</InputLabel>
@@ -501,7 +500,7 @@ return (
 
 
 <Grid container >
- <Grid item xs={12} md={6} align="center">
+ <Grid item xs={12} md={6} >
   <TextField
   onChange={handleOnChangePlayer}
    className={classes.fields}
@@ -517,7 +516,7 @@ return (
     }}
   />
   </Grid>
-  <Grid  item xs={12} md={6} align="center">
+  <Grid  item xs={12} md={6} >
   <TextField
   onChange={handleOnChangePlayer}
    className={classes.fields}
@@ -536,7 +535,7 @@ return (
   
   </Grid>
 </Grid>
-<Grid container>
+<Grid container >
   <Grid item xs={12} md={10}>
 
   </Grid>
@@ -552,7 +551,7 @@ return (
 </form>
   </Paper>
 
-          </div>
+    </div>
 
 
         }
